@@ -1,0 +1,9 @@
+TFS_Gasentspannung_filter_gradual_clogging.csv
+Graduelles Zusetzen des Filters: filter_clogging:height -0.022; duration 500; offset 0.025 ; startTime 0
+
+TFS_Gasentspannung_threewayvalve_leakiness.csv
+%Alterung des Dreiwegeventils: ThreewayValve.relativeLeakiness: 0.4
+
+TFS_Gasentspannung_reconfiguration.csv
+Ein Öffnen einer parallelen Gasentspannungsstrecke 
+Hinzufügen einer Senke und eines Ventils Leakage sowie leakage_degree.y=0.5

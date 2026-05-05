@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+.Python
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Generated output folders (results are not source code)
+Adaptation_Results/
+Comparison_Results/
+RCA_Results/
+Dataplots/
+
+# Raw datasets (too large; required CSV inputs live in Scripts/Artefact_*/Resources/)
+# datasets/
+
+# Modelica build artifacts
+Modelica/Current_Model_Build/
+Modelica/Model_Backup/
+*.mat
+*.log
+*.xml
+OMEdit/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Environment / secrets
+.env
+.env.local
+
+# Jupyter
+.ipynb_checkpoints/

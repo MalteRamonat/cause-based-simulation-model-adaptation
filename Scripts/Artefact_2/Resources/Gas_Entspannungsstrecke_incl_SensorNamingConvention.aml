@@ -1,0 +1,1233 @@
+﻿<CAEXFile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.dke.de/CAEX" SchemaVersion="3.0" FileName="Gas_Entspannungsstrecke_incl_SensorNamingConvention.aml" xsi:schemaLocation="http://www.dke.de/CAEX CAEX_ClassModel_V.3.0.xsd">
+  <AdditionalInformation AutomationMLVersion="2.0" />
+  <SuperiorStandardVersion>AutomationML 2.10</SuperiorStandardVersion>
+  <SourceDocumentInformation OriginName="AutomationML Editor" OriginID="916578CA-FE0D-474E-A4FC-9E1719892369" OriginVersion="5.5.6.0" LastWritingDateTime="2025-05-20T13:25:05.0997469+02:00" OriginVendor="AutomationML e.V." OriginVendorURL="www.AutomationML.org" OriginRelease="5.5.6.0" OriginProjectTitle="unspecified" OriginProjectID="unspecified" />
+  <InstanceHierarchy Name="InstanceHierarchy">
+    <Version>0</Version>
+    <InternalElement Name="Plant" ID="b0ada7bf-9c39-4658-ad66-f3bb5de9dbb6">
+      <InternalElement Name="source" ID="ac0598fd-02e9-4421-a55c-8ae09edd8bf3" RefBaseSystemUnitPath="TE_SystemUnitClassLibrary/Product_Source">
+        <Attribute Name="Temperature" AttributeDataType="xs:double" Unit="°C" />
+        <Attribute Name="Pressure" AttributeDataType="xs:boolean" Unit="Pa" />
+        <ExternalInterface Name="Product_OUT" ID="b6dbec48-b1fa-43a9-b32d-35452bd1b1e6" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_OUT" />
+        <RoleRequirements RefBaseRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+      </InternalElement>
+      <InternalElement Name="Pipe_Input_Filter" ID="bee657b4-8457-4470-bc30-1041a2085c4c" RefBaseSystemUnitPath="TE_SystemUnitClassLibrary/Pipe">
+        <Attribute Name="Flow" AttributeDataType="xs:float" RefAttributeType="AttributeTypeLib/SystemUnitAttribute/Flow" Unit="m^3/h" />
+        <Attribute Name="Pressure" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Pressure" Unit="kPa">
+          <Constraint Name="">
+            <OrdinalScaledType />
+          </Constraint>
+        </Attribute>
+        <Attribute Name="Temperature" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Temperature" Unit="°C">
+          <Constraint Name="">
+            <OrdinalScaledType>
+              <RequiredMinValue>-273</RequiredMinValue>
+            </OrdinalScaledType>
+          </Constraint>
+        </Attribute>
+        <Attribute Name="Length" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/ParameterAttributeType/Lenght" />
+        <Attribute Name="Diameter" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/ParameterAttributeType/Diameter" />
+        <ExternalInterface Name="Product_OUT" ID="80691fbb-5388-4cc8-98fc-f408079f16bf" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_OUT" />
+        <ExternalInterface Name="Product_IN" ID="c89732d0-e3b8-482c-bf37-24e1113ea555" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_IN">
+          <Attribute Name="Direction" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/Direction">
+            <Constraint Name="AllowedValues">
+              <NominalScaledType>
+                <RequiredValue>In</RequiredValue>
+                <RequiredValue>Out</RequiredValue>
+                <RequiredValue>InOut</RequiredValue>
+              </NominalScaledType>
+            </Constraint>
+          </Attribute>
+        </ExternalInterface>
+        <InternalElement Name="PIR201" ID="2a019f29-3c7c-4297-8ab1-ef3920185f5b" RefBaseSystemUnitPath="TE_SystemUnitClassLibrary/Sensor_Pressure">
+          <Attribute Name="Measurement_Pressure" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/SensorAttribute/Measurement_Pressure" Unit="kPa">
+            <Constraint Name="">
+              <OrdinalScaledType />
+            </Constraint>
+          </Attribute>
+          <ExternalInterface Name="Digital_OUT" ID="2463c60f-ed30-4c2e-9f12-a718fdf93cff" RefBaseClassPath="TE_InterfaceClassLibrary/Signal/Digital_OUT" />
+          <RoleRequirements RefBaseRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+        </InternalElement>
+        <InternalElement Name="TIR101" ID="74ba372a-e3bc-4557-af51-a2cc6252e324" RefBaseSystemUnitPath="TE_SystemUnitClassLibrary/Sensor_Temperature">
+          <Attribute Name="Measurement_Temperature" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/SensorAttribute/Measurement_Temperature" Unit="°C">
+            <Constraint Name="">
+              <OrdinalScaledType>
+                <RequiredMinValue>-273</RequiredMinValue>
+              </OrdinalScaledType>
+            </Constraint>
+          </Attribute>
+          <ExternalInterface Name="Digital_OUT" ID="0f450884-cf15-4feb-a97a-efeee63deb45" RefBaseClassPath="TE_InterfaceClassLibrary/Signal/Digital_OUT" />
+          <RoleRequirements RefBaseRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+        </InternalElement>
+        <RoleRequirements RefBaseRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+      </InternalElement>
+      <InternalElement Name="Filter" ID="7f171892-6ba3-4fef-8e01-7a90750cd60c" RefBaseSystemUnitPath="TE_SystemUnitClassLibrary/Filter">
+        <Attribute Name="Flow" AttributeDataType="xs:string" />
+        <Attribute Name="Temperature" AttributeDataType="xs:string" />
+        <Attribute Name="Pressure" AttributeDataType="xs:string" />
+        <Attribute Name="Clogging" AttributeDataType="xs:string" />
+        <Attribute Name="PDropNom" AttributeDataType="xs:string" />
+        <ExternalInterface Name="Product_OUT" ID="55b676a1-80a2-4b2c-ad3f-485cd7670e20" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_OUT" />
+        <ExternalInterface Name="Product_IN" ID="e94df8d0-5953-4a0c-a4a9-03249e0c6d0b" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_IN">
+          <Attribute Name="Direction" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/Direction">
+            <Constraint Name="AllowedValues">
+              <NominalScaledType>
+                <RequiredValue>In</RequiredValue>
+                <RequiredValue>Out</RequiredValue>
+                <RequiredValue>InOut</RequiredValue>
+              </NominalScaledType>
+            </Constraint>
+          </Attribute>
+        </ExternalInterface>
+        <InternalElement Name="PIR202" ID="ec293948-7a3f-4577-b52f-6b678149563a" RefBaseSystemUnitPath="TE_SystemUnitClassLibrary/Sensor_Pressure">
+          <Attribute Name="Measurement_Pressure" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/SensorAttribute/Measurement_Pressure" Unit="kPa">
+            <Constraint Name="">
+              <OrdinalScaledType />
+            </Constraint>
+          </Attribute>
+          <ExternalInterface Name="Digital_OUT" ID="67368f83-065e-4f8a-9427-9d8aa778d001" RefBaseClassPath="TE_InterfaceClassLibrary/Signal/Digital_OUT" />
+          <RoleRequirements RefBaseRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+        </InternalElement>
+        <RoleRequirements RefBaseRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+      </InternalElement>
+      <InternalElement Name="Pipe_Filter_Heat_Exchanger" ID="7d6ad5d2-18ff-40bb-b236-f37b388dcfbe" RefBaseSystemUnitPath="TE_SystemUnitClassLibrary/Pipe">
+        <Attribute Name="Flow" AttributeDataType="xs:float" RefAttributeType="AttributeTypeLib/SystemUnitAttribute/Flow" Unit="m^3/h" />
+        <Attribute Name="Pressure" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Pressure" Unit="kPa">
+          <Constraint Name="">
+            <OrdinalScaledType />
+          </Constraint>
+        </Attribute>
+        <Attribute Name="Temperature" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Temperature" Unit="°C">
+          <Constraint Name="">
+            <OrdinalScaledType>
+              <RequiredMinValue>-273</RequiredMinValue>
+            </OrdinalScaledType>
+          </Constraint>
+        </Attribute>
+        <Attribute Name="Length" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/ParameterAttributeType/Lenght" />
+        <Attribute Name="Diameter" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/ParameterAttributeType/Diameter" />
+        <ExternalInterface Name="Product_OUT" ID="97fc5a5b-d72b-40f8-8926-68d3b5349a7d" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_OUT" />
+        <ExternalInterface Name="Product_IN" ID="10ffae22-85a5-4029-96d6-52b57fb3fc60" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_IN">
+          <Attribute Name="Direction" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/Direction">
+            <Constraint Name="AllowedValues">
+              <NominalScaledType>
+                <RequiredValue>In</RequiredValue>
+                <RequiredValue>Out</RequiredValue>
+                <RequiredValue>InOut</RequiredValue>
+              </NominalScaledType>
+            </Constraint>
+          </Attribute>
+        </ExternalInterface>
+        <RoleRequirements RefBaseRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+      </InternalElement>
+      <InternalElement Name="Heat_Exchanger" ID="1f08587c-5413-4f1f-a2a1-9ee5751c12e2" RefBaseSystemUnitPath="TE_SystemUnitClassLibrary/Heat_Exchanger">
+        <Attribute Name="Flow" AttributeDataType="xs:string" />
+        <Attribute Name="Temperature" AttributeDataType="xs:string" />
+        <Attribute Name="Pressure" AttributeDataType="xs:string" />
+        <InternalElement Name="Heat_Exchanger_Primary_Side" ID="5a1c065c-7d01-48a3-90e1-5593f163f0e1" RefBaseSystemUnitPath="TE_SystemUnitClassLibrary/Pipe">
+          <Attribute Name="Flow" AttributeDataType="xs:float" RefAttributeType="AttributeTypeLib/SystemUnitAttribute/Flow" Unit="m^3/h" />
+          <Attribute Name="Pressure" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Pressure" Unit="kPa">
+            <Constraint Name="">
+              <OrdinalScaledType />
+            </Constraint>
+          </Attribute>
+          <Attribute Name="Temperature" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Temperature" Unit="°C">
+            <Constraint Name="">
+              <OrdinalScaledType>
+                <RequiredMinValue>-273</RequiredMinValue>
+              </OrdinalScaledType>
+            </Constraint>
+          </Attribute>
+          <Attribute Name="Primary_CA" AttributeDataType="xs:string" />
+          <Attribute Name="Primary_HTransfer" AttributeDataType="xs:string" />
+          <ExternalInterface Name="Product_OUT" ID="07132d32-8adf-408c-b1d7-284d25a77297" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_OUT" />
+          <ExternalInterface Name="Product_IN" ID="682aa07f-c906-4002-9c4e-4337f27590b2" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_IN">
+            <Attribute Name="Direction" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/Direction">
+              <Constraint Name="AllowedValues">
+                <NominalScaledType>
+                  <RequiredValue>In</RequiredValue>
+                  <RequiredValue>Out</RequiredValue>
+                  <RequiredValue>InOut</RequiredValue>
+                </NominalScaledType>
+              </Constraint>
+            </Attribute>
+          </ExternalInterface>
+          <ExternalInterface Name="Product_INOUT" ID="3c171abb-d8e8-40c4-8cde-58743281a0c6" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_INOUT">
+            <Attribute Name="Direction" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/Direction">
+              <DefaultValue>InOut</DefaultValue>
+              <Value>InOut</Value>
+              <Constraint Name="AllowedValues">
+                <NominalScaledType>
+                  <RequiredValue>In</RequiredValue>
+                  <RequiredValue>Out</RequiredValue>
+                  <RequiredValue>InOut</RequiredValue>
+                </NominalScaledType>
+              </Constraint>
+            </Attribute>
+          </ExternalInterface>
+          <RoleRequirements RefBaseRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+        </InternalElement>
+        <InternalElement Name="Heat_Exchanger_Secondary_Side" ID="d2ea36aa-7c1c-4639-a997-5115cbc9d128" RefBaseSystemUnitPath="TE_SystemUnitClassLibrary/Pipe">
+          <Attribute Name="Flow" AttributeDataType="xs:float" RefAttributeType="AttributeTypeLib/SystemUnitAttribute/Flow" Unit="m^3/h" />
+          <Attribute Name="Pressure" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Pressure" Unit="kPa">
+            <Constraint Name="">
+              <OrdinalScaledType />
+            </Constraint>
+          </Attribute>
+          <Attribute Name="Temperature" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Temperature" Unit="°C">
+            <Constraint Name="">
+              <OrdinalScaledType>
+                <RequiredMinValue>-273</RequiredMinValue>
+              </OrdinalScaledType>
+            </Constraint>
+          </Attribute>
+          <Attribute Name="Secondary_CSurface" AttributeDataType="xs:string" />
+          <Attribute Name="Secondary_HeatT" AttributeDataType="xs:string" />
+          <ExternalInterface Name="Product_OUT" ID="9c4df1b7-c4c9-4269-adf8-4b67d8413f9a" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_OUT" />
+          <ExternalInterface Name="Product_IN" ID="1845db75-2b50-44f1-9d3a-194cb01178c7" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_IN">
+            <Attribute Name="Direction" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/Direction">
+              <Constraint Name="AllowedValues">
+                <NominalScaledType>
+                  <RequiredValue>In</RequiredValue>
+                  <RequiredValue>Out</RequiredValue>
+                  <RequiredValue>InOut</RequiredValue>
+                </NominalScaledType>
+              </Constraint>
+            </Attribute>
+          </ExternalInterface>
+          <ExternalInterface Name="Product_INOUT" ID="bae5d9b3-7b42-4938-8dd3-8421d53ac9d8" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_INOUT">
+            <Attribute Name="Direction" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/Direction">
+              <DefaultValue>InOut</DefaultValue>
+              <Value>InOut</Value>
+              <Constraint Name="AllowedValues">
+                <NominalScaledType>
+                  <RequiredValue>In</RequiredValue>
+                  <RequiredValue>Out</RequiredValue>
+                  <RequiredValue>InOut</RequiredValue>
+                </NominalScaledType>
+              </Constraint>
+            </Attribute>
+          </ExternalInterface>
+          <RoleRequirements RefBaseRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+        </InternalElement>
+        <InternalLink RefPartnerSideA="3c171abb-d8e8-40c4-8cde-58743281a0c6" RefPartnerSideB="bae5d9b3-7b42-4938-8dd3-8421d53ac9d8" Name="Link" />
+        <RoleRequirements RefBaseRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+      </InternalElement>
+      <InternalElement Name="source_water" ID="c690f6af-cd28-4523-9f4a-07001e1d5b18" RefBaseSystemUnitPath="TE_SystemUnitClassLibrary/Product_Source">
+        <Attribute Name="Temperature" AttributeDataType="xs:double" Unit="°C" />
+        <Attribute Name="Pressure" AttributeDataType="xs:boolean" Unit="Pa" />
+        <Attribute Name="Flow" AttributeDataType="xs:string" />
+        <ExternalInterface Name="Product_OUT" ID="93bedf9e-b16b-49bf-8fad-31701492dc35" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_OUT" />
+        <RoleRequirements RefBaseRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+      </InternalElement>
+      <InternalElement Name="ThreeWayValve" ID="e438b304-2443-4a2e-99fd-b68b51d1be5c" RefBaseSystemUnitPath="TE_SystemUnitClassLibrary/Valve">
+        <Attribute Name="State" AttributeDataType="xs:float" RefAttributeType="AttributeTypeLib/SystemUnitAttribute/State" Unit="%">
+          <Constraint Name="">
+            <OrdinalScaledType>
+              <RequiredMaxValue>100</RequiredMaxValue>
+              <RequiredMinValue>0</RequiredMinValue>
+            </OrdinalScaledType>
+          </Constraint>
+        </Attribute>
+        <Attribute Name="PDropNom" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/ParameterAttributeType/PDropNom" />
+        <Attribute Name="Flow" AttributeDataType="xs:float" RefAttributeType="AttributeTypeLib/SystemUnitAttribute/Flow" Unit="m^3/h" />
+        <Attribute Name="Pressure" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Pressure" Unit="kPa">
+          <Constraint Name="">
+            <OrdinalScaledType />
+          </Constraint>
+        </Attribute>
+        <Attribute Name="Temperature" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Temperature" Unit="°C">
+          <Constraint Name="">
+            <OrdinalScaledType>
+              <RequiredMinValue>-273</RequiredMinValue>
+            </OrdinalScaledType>
+          </Constraint>
+        </Attribute>
+        <ExternalInterface Name="Product_OUT" ID="1e57a31e-d035-43fe-8b5d-dced92b7e787" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_OUT" />
+        <ExternalInterface Name="Product_IN" ID="a488b175-c705-46df-8a5a-e21f15c52475" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_IN">
+          <Attribute Name="Direction" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/Direction">
+            <Constraint Name="AllowedValues">
+              <NominalScaledType>
+                <RequiredValue>In</RequiredValue>
+                <RequiredValue>Out</RequiredValue>
+                <RequiredValue>InOut</RequiredValue>
+              </NominalScaledType>
+            </Constraint>
+          </Attribute>
+        </ExternalInterface>
+        <ExternalInterface Name="Digital_IN" ID="551acebc-c311-4587-a1cb-04db3c841469" RefBaseClassPath="TE_InterfaceClassLibrary/Signal/Digital_IN" />
+        <RoleRequirements RefBaseRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+      </InternalElement>
+      <InternalElement Name="Pipe_Water_pre_Heat_Exchanger" ID="8b5eed8f-2177-4a25-8919-9d5fd539f121" RefBaseSystemUnitPath="TE_SystemUnitClassLibrary/Pipe">
+        <Attribute Name="Flow" AttributeDataType="xs:float" RefAttributeType="AttributeTypeLib/SystemUnitAttribute/Flow" Unit="m^3/h" />
+        <Attribute Name="Pressure" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Pressure" Unit="kPa">
+          <Constraint Name="">
+            <OrdinalScaledType />
+          </Constraint>
+        </Attribute>
+        <Attribute Name="Temperature" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Temperature" Unit="°C">
+          <Constraint Name="">
+            <OrdinalScaledType>
+              <RequiredMinValue>-273</RequiredMinValue>
+            </OrdinalScaledType>
+          </Constraint>
+        </Attribute>
+        <Attribute Name="Length" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/ParameterAttributeType/Lenght" />
+        <Attribute Name="Diameter" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/ParameterAttributeType/Diameter" />
+        <ExternalInterface Name="Product_OUT" ID="73f0b945-12c4-4561-ac86-e2d25935b5fe" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_OUT" />
+        <ExternalInterface Name="Product_IN" ID="71ab6bba-6ae7-4897-87ce-53d5e4dc0380" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_IN">
+          <Attribute Name="Direction" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/Direction">
+            <Constraint Name="AllowedValues">
+              <NominalScaledType>
+                <RequiredValue>In</RequiredValue>
+                <RequiredValue>Out</RequiredValue>
+                <RequiredValue>InOut</RequiredValue>
+              </NominalScaledType>
+            </Constraint>
+          </Attribute>
+        </ExternalInterface>
+        <InternalElement Name="TIR104" ID="d44869a4-3f1c-41d0-980a-5ac7aceec746" RefBaseSystemUnitPath="TE_SystemUnitClassLibrary/Sensor_Temperature">
+          <Attribute Name="Measurement_Temperature" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/SensorAttribute/Measurement_Temperature" Unit="°C">
+            <Constraint Name="">
+              <OrdinalScaledType>
+                <RequiredMinValue>-273</RequiredMinValue>
+              </OrdinalScaledType>
+            </Constraint>
+          </Attribute>
+          <ExternalInterface Name="Digital_OUT" ID="fbdf8b08-47be-4679-b07b-03cb28f37c05" RefBaseClassPath="TE_InterfaceClassLibrary/Signal/Digital_OUT" />
+          <RoleRequirements RefBaseRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+        </InternalElement>
+        <RoleRequirements RefBaseRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+      </InternalElement>
+      <InternalElement Name="Pipe_Water_post_Heat_Exchanger" ID="2e41b3cf-db96-4ce1-96a9-d96c6a14c2e2" RefBaseSystemUnitPath="TE_SystemUnitClassLibrary/Pipe">
+        <Attribute Name="Flow" AttributeDataType="xs:float" RefAttributeType="AttributeTypeLib/SystemUnitAttribute/Flow" Unit="m^3/h" />
+        <Attribute Name="Pressure" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Pressure" Unit="kPa">
+          <Constraint Name="">
+            <OrdinalScaledType />
+          </Constraint>
+        </Attribute>
+        <Attribute Name="Temperature" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Temperature" Unit="°C">
+          <Constraint Name="">
+            <OrdinalScaledType>
+              <RequiredMinValue>-273</RequiredMinValue>
+            </OrdinalScaledType>
+          </Constraint>
+        </Attribute>
+        <Attribute Name="Length" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/ParameterAttributeType/Lenght" />
+        <Attribute Name="Diameter" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/ParameterAttributeType/Diameter" />
+        <ExternalInterface Name="Product_OUT" ID="96f8b621-3223-4179-af52-3f90ac0a6a2e" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_OUT" />
+        <ExternalInterface Name="Product_IN" ID="28a457cb-6a82-444e-84b2-ea5c9344726a" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_IN">
+          <Attribute Name="Direction" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/Direction">
+            <Constraint Name="AllowedValues">
+              <NominalScaledType>
+                <RequiredValue>In</RequiredValue>
+                <RequiredValue>Out</RequiredValue>
+                <RequiredValue>InOut</RequiredValue>
+              </NominalScaledType>
+            </Constraint>
+          </Attribute>
+        </ExternalInterface>
+        <InternalElement Name="TIR105" ID="8f9d8fee-ab59-44ec-8ab0-8bf411a56301" RefBaseSystemUnitPath="TE_SystemUnitClassLibrary/Sensor_Temperature">
+          <Attribute Name="Measurement_Temperature" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/SensorAttribute/Measurement_Temperature" Unit="°C">
+            <Constraint Name="">
+              <OrdinalScaledType>
+                <RequiredMinValue>-273</RequiredMinValue>
+              </OrdinalScaledType>
+            </Constraint>
+          </Attribute>
+          <ExternalInterface Name="Digital_OUT" ID="450a0c85-6bcc-4b46-8b6e-d55c7f3fbe0d" RefBaseClassPath="TE_InterfaceClassLibrary/Signal/Digital_OUT" />
+          <RoleRequirements RefBaseRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+        </InternalElement>
+        <RoleRequirements RefBaseRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+      </InternalElement>
+      <InternalElement Name="sink_water" ID="a798b92c-1a7e-4140-8ce6-db5f69b8a487" RefBaseSystemUnitPath="TE_SystemUnitClassLibrary/Product_Sink">
+        <Attribute Name="Flow" AttributeDataType="xs:double" Unit="%" RefAttributeType="AttributeTypeLib/SystemUnitAttribute/Level" />
+        <Attribute Name="Temperature" AttributeDataType="xs:double" Unit="°C" />
+        <Attribute Name="Pressure" AttributeDataType="xs:boolean" Unit="kPa" />
+        <ExternalInterface Name="Product_IN" ID="9dd4fa78-c341-4a18-85c3-b831ea7cbee6" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_IN">
+          <Attribute Name="Direction" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/Direction">
+            <Constraint Name="AllowedValues">
+              <NominalScaledType>
+                <RequiredValue>In</RequiredValue>
+                <RequiredValue>Out</RequiredValue>
+                <RequiredValue>InOut</RequiredValue>
+              </NominalScaledType>
+            </Constraint>
+          </Attribute>
+        </ExternalInterface>
+        <RoleRequirements RefBaseRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+      </InternalElement>
+      <InternalElement Name="Pipe_Heat_Exchanger_Choke_Valve" ID="238ba927-2b57-4723-aacb-b34f63ac5040" RefBaseSystemUnitPath="TE_SystemUnitClassLibrary/Pipe">
+        <Attribute Name="Flow" AttributeDataType="xs:float" RefAttributeType="AttributeTypeLib/SystemUnitAttribute/Flow" Unit="m^3/h" />
+        <Attribute Name="Pressure" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Pressure" Unit="kPa">
+          <Constraint Name="">
+            <OrdinalScaledType />
+          </Constraint>
+        </Attribute>
+        <Attribute Name="Temperature" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Temperature" Unit="°C">
+          <Constraint Name="">
+            <OrdinalScaledType>
+              <RequiredMinValue>-273</RequiredMinValue>
+            </OrdinalScaledType>
+          </Constraint>
+        </Attribute>
+        <Attribute Name="Length" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/ParameterAttributeType/Lenght" />
+        <Attribute Name="Diameter" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/ParameterAttributeType/Diameter" />
+        <ExternalInterface Name="Product_OUT" ID="0374df98-633e-4db9-849d-a94c402756e6" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_OUT" />
+        <ExternalInterface Name="Product_IN" ID="184334f7-0ad3-4698-9c4c-12cb7427dacc" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_IN">
+          <Attribute Name="Direction" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/Direction">
+            <Constraint Name="AllowedValues">
+              <NominalScaledType>
+                <RequiredValue>In</RequiredValue>
+                <RequiredValue>Out</RequiredValue>
+                <RequiredValue>InOut</RequiredValue>
+              </NominalScaledType>
+            </Constraint>
+          </Attribute>
+        </ExternalInterface>
+        <InternalElement Name="TIR102" ID="2cd60900-4d26-43b7-8ddb-d2427751d0c0" RefBaseSystemUnitPath="TE_SystemUnitClassLibrary/Sensor_Temperature">
+          <Attribute Name="Measurement_Temperature" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/SensorAttribute/Measurement_Temperature" Unit="°C">
+            <Constraint Name="">
+              <OrdinalScaledType>
+                <RequiredMinValue>-273</RequiredMinValue>
+              </OrdinalScaledType>
+            </Constraint>
+          </Attribute>
+          <ExternalInterface Name="Digital_OUT" ID="f218606b-29ce-457f-85a4-0ab27d702070" RefBaseClassPath="TE_InterfaceClassLibrary/Signal/Digital_OUT" />
+          <RoleRequirements RefBaseRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+        </InternalElement>
+        <RoleRequirements RefBaseRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+      </InternalElement>
+      <InternalElement Name="Choke_Valve" ID="24dc19d7-6bb1-48df-92f6-f814b5025198" RefBaseSystemUnitPath="TE_SystemUnitClassLibrary/Valve">
+        <Attribute Name="test" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/ParameterAttributeType/Lenght" />
+        <Attribute Name="State" AttributeDataType="xs:float" RefAttributeType="AttributeTypeLib/SystemUnitAttribute/State" Unit="%">
+          <Constraint Name="">
+            <OrdinalScaledType>
+              <RequiredMaxValue>100</RequiredMaxValue>
+              <RequiredMinValue>0</RequiredMinValue>
+            </OrdinalScaledType>
+          </Constraint>
+        </Attribute>
+        <Attribute Name="PDropNom" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/ParameterAttributeType/PDropNom" />
+        <Attribute Name="Flow" AttributeDataType="xs:float" RefAttributeType="AttributeTypeLib/SystemUnitAttribute/Flow" Unit="m^3/h" />
+        <Attribute Name="Pressure" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Pressure" Unit="kPa">
+          <Constraint Name="">
+            <OrdinalScaledType />
+          </Constraint>
+        </Attribute>
+        <Attribute Name="Temperature" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Temperature" Unit="°C">
+          <Constraint Name="">
+            <OrdinalScaledType>
+              <RequiredMinValue>-273</RequiredMinValue>
+            </OrdinalScaledType>
+          </Constraint>
+        </Attribute>
+        <ExternalInterface Name="Product_OUT" ID="ed077720-74df-46d2-89d9-22da8e550ed2" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_OUT" />
+        <ExternalInterface Name="Product_IN" ID="001d6102-c6cb-486a-953c-d92bea381298" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_IN">
+          <Attribute Name="Direction" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/Direction">
+            <Constraint Name="AllowedValues">
+              <NominalScaledType>
+                <RequiredValue>In</RequiredValue>
+                <RequiredValue>Out</RequiredValue>
+                <RequiredValue>InOut</RequiredValue>
+              </NominalScaledType>
+            </Constraint>
+          </Attribute>
+        </ExternalInterface>
+        <ExternalInterface Name="Digital_IN" ID="229b95df-76d4-46a7-a357-62ab1e064260" RefBaseClassPath="TE_InterfaceClassLibrary/Signal/Digital_IN" />
+        <RoleRequirements RefBaseRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+      </InternalElement>
+      <InternalElement Name="Pipe_Choke_Valve_Output" ID="a02f7468-aa5c-4961-97b5-73cc94828307" RefBaseSystemUnitPath="TE_SystemUnitClassLibrary/Pipe">
+        <Attribute Name="Flow" AttributeDataType="xs:float" RefAttributeType="AttributeTypeLib/SystemUnitAttribute/Flow" Unit="m^3/h" />
+        <Attribute Name="Pressure" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Pressure" Unit="kPa">
+          <Constraint Name="">
+            <OrdinalScaledType />
+          </Constraint>
+        </Attribute>
+        <Attribute Name="Temperature" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Temperature" Unit="°C">
+          <Constraint Name="">
+            <OrdinalScaledType>
+              <RequiredMinValue>-273</RequiredMinValue>
+            </OrdinalScaledType>
+          </Constraint>
+        </Attribute>
+        <Attribute Name="Length" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/ParameterAttributeType/Lenght" />
+        <Attribute Name="Diameter" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/ParameterAttributeType/Diameter" />
+        <Attribute Name="HLoss" AttributeDataType="xs:string" />
+        <Attribute Name="Alpha" AttributeDataType="xs:string" />
+        <ExternalInterface Name="Product_OUT" ID="ac3e2810-0393-4d14-9bdb-b78b614ff03e" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_OUT" />
+        <ExternalInterface Name="Product_IN" ID="67b2f087-2806-418a-b1aa-e8ce4c38e97f" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_IN">
+          <Attribute Name="Direction" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/Direction">
+            <Constraint Name="AllowedValues">
+              <NominalScaledType>
+                <RequiredValue>In</RequiredValue>
+                <RequiredValue>Out</RequiredValue>
+                <RequiredValue>InOut</RequiredValue>
+              </NominalScaledType>
+            </Constraint>
+          </Attribute>
+        </ExternalInterface>
+        <InternalElement Name="TIR103" ID="e3cc2481-8da3-4875-89a4-460f2e005c17" RefBaseSystemUnitPath="TE_SystemUnitClassLibrary/Sensor_Temperature">
+          <Attribute Name="Measurement_Temperature" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/SensorAttribute/Measurement_Temperature" Unit="°C">
+            <Constraint Name="">
+              <OrdinalScaledType>
+                <RequiredMinValue>-273</RequiredMinValue>
+              </OrdinalScaledType>
+            </Constraint>
+          </Attribute>
+          <ExternalInterface Name="Digital_OUT" ID="aa04525d-3f7b-4d2d-a08e-395b32b6c629" RefBaseClassPath="TE_InterfaceClassLibrary/Signal/Digital_OUT" />
+          <RoleRequirements RefBaseRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+        </InternalElement>
+        <InternalElement Name="PIR203" ID="cd53ca5f-c00f-4d81-8d78-59d413098d92" RefBaseSystemUnitPath="TE_SystemUnitClassLibrary/Sensor_Pressure">
+          <Attribute Name="Measurement_Pressure" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/SensorAttribute/Measurement_Pressure" Unit="kPa">
+            <Constraint Name="">
+              <OrdinalScaledType />
+            </Constraint>
+          </Attribute>
+          <ExternalInterface Name="Digital_OUT" ID="e3507b5b-2224-4596-bad6-42b2193d2872" RefBaseClassPath="TE_InterfaceClassLibrary/Signal/Digital_OUT" />
+          <RoleRequirements RefBaseRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+        </InternalElement>
+        <InternalElement Name="FIR401" ID="a746ec9c-e9ed-44f1-bae6-5ba3a836fc79" RefBaseSystemUnitPath="TE_SystemUnitClassLibrary/Sensor_Flow">
+          <Attribute Name="Measurement_Flow" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/SensorAttribute/Measurement_Flow" Unit="m^3/h" />
+          <ExternalInterface Name="Digital_OUT" ID="c4e60c70-050b-4f55-a61b-76faa9f0b20d" RefBaseClassPath="TE_InterfaceClassLibrary/Signal/Digital_OUT" />
+          <RoleRequirements RefBaseRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+        </InternalElement>
+        <RoleRequirements RefBaseRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+      </InternalElement>
+      <InternalElement Name="sink" ID="2e3baa47-0014-4f51-b1a8-4e2e8c071076" RefBaseSystemUnitPath="TE_SystemUnitClassLibrary/Product_Sink">
+        <Attribute Name="Temperature" AttributeDataType="xs:double" Unit="°C" />
+        <Attribute Name="Pressure" AttributeDataType="xs:boolean" Unit="kPa" />
+        <ExternalInterface Name="Product_IN" ID="1c2e5726-7d77-4a9d-a60f-fe6e43bc2996" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_IN">
+          <Attribute Name="Direction" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/Direction">
+            <Constraint Name="AllowedValues">
+              <NominalScaledType>
+                <RequiredValue>In</RequiredValue>
+                <RequiredValue>Out</RequiredValue>
+                <RequiredValue>InOut</RequiredValue>
+              </NominalScaledType>
+            </Constraint>
+          </Attribute>
+        </ExternalInterface>
+        <RoleRequirements RefBaseRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+      </InternalElement>
+      <InternalLink RefPartnerSideA="b6dbec48-b1fa-43a9-b32d-35452bd1b1e6" RefPartnerSideB="c89732d0-e3b8-482c-bf37-24e1113ea555" Name="Link" />
+      <InternalLink RefPartnerSideA="80691fbb-5388-4cc8-98fc-f408079f16bf" RefPartnerSideB="e94df8d0-5953-4a0c-a4a9-03249e0c6d0b" Name="InternalLink" />
+      <InternalLink RefPartnerSideA="55b676a1-80a2-4b2c-ad3f-485cd7670e20" RefPartnerSideB="10ffae22-85a5-4029-96d6-52b57fb3fc60" Name="InternalLink1" />
+      <InternalLink RefPartnerSideA="93bedf9e-b16b-49bf-8fad-31701492dc35" RefPartnerSideB="a488b175-c705-46df-8a5a-e21f15c52475" Name="InternalLink3" />
+      <InternalLink RefPartnerSideA="1e57a31e-d035-43fe-8b5d-dced92b7e787" RefPartnerSideB="71ab6bba-6ae7-4897-87ce-53d5e4dc0380" Name="InternalLink4" />
+      <InternalLink RefPartnerSideA="96f8b621-3223-4179-af52-3f90ac0a6a2e" RefPartnerSideB="9dd4fa78-c341-4a18-85c3-b831ea7cbee6" Name="InternalLink7" />
+      <InternalLink RefPartnerSideA="0374df98-633e-4db9-849d-a94c402756e6" RefPartnerSideB="001d6102-c6cb-486a-953c-d92bea381298" Name="InternalLink9" />
+      <InternalLink RefPartnerSideA="ed077720-74df-46d2-89d9-22da8e550ed2" RefPartnerSideB="67b2f087-2806-418a-b1aa-e8ce4c38e97f" Name="InternalLink10" />
+      <InternalLink RefPartnerSideA="ac3e2810-0393-4d14-9bdb-b78b614ff03e" RefPartnerSideB="1c2e5726-7d77-4a9d-a60f-fe6e43bc2996" Name="InternalLink11" />
+      <InternalLink RefPartnerSideA="07132d32-8adf-408c-b1d7-284d25a77297" RefPartnerSideB="184334f7-0ad3-4698-9c4c-12cb7427dacc" Name="InternalLink12" />
+      <InternalLink RefPartnerSideA="682aa07f-c906-4002-9c4e-4337f27590b2" RefPartnerSideB="97fc5a5b-d72b-40f8-8926-68d3b5349a7d" Name="InternalLink13" />
+      <InternalLink RefPartnerSideA="9c4df1b7-c4c9-4269-adf8-4b67d8413f9a" RefPartnerSideB="28a457cb-6a82-444e-84b2-ea5c9344726a" Name="InternalLink14" />
+      <InternalLink RefPartnerSideA="1845db75-2b50-44f1-9d3a-194cb01178c7" RefPartnerSideB="73f0b945-12c4-4561-ac86-e2d25935b5fe" Name="InternalLink15" />
+    </InternalElement>
+  </InstanceHierarchy>
+  <InterfaceClassLib Name="TE_InterfaceClassLibrary">
+    <Version>0</Version>
+    <InterfaceClass Name="Product">
+      <InterfaceClass Name="Product_IN" RefBaseClassPath="TE_InterfaceClassLibrary/Product">
+        <Attribute Name="Direction" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/Direction">
+          <DefaultValue>In</DefaultValue>
+          <Value>In</Value>
+          <Constraint Name="AllowedValues">
+            <NominalScaledType>
+              <RequiredValue>In</RequiredValue>
+              <RequiredValue>Out</RequiredValue>
+              <RequiredValue>InOut</RequiredValue>
+            </NominalScaledType>
+          </Constraint>
+        </Attribute>
+      </InterfaceClass>
+      <InterfaceClass Name="Product_OUT" RefBaseClassPath="TE_InterfaceClassLibrary/Product">
+        <Attribute Name="Direction" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/Direction">
+          <DefaultValue>Out</DefaultValue>
+          <Value>Out</Value>
+          <Constraint Name="AllowedValues">
+            <NominalScaledType>
+              <RequiredValue>In</RequiredValue>
+              <RequiredValue>Out</RequiredValue>
+              <RequiredValue>InOut</RequiredValue>
+            </NominalScaledType>
+          </Constraint>
+        </Attribute>
+      </InterfaceClass>
+      <InterfaceClass Name="Product_INOUT" RefBaseClassPath="TE_InterfaceClassLibrary/Product">
+        <Attribute Name="Direction" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/Direction">
+          <DefaultValue>InOut</DefaultValue>
+          <Value>InOut</Value>
+          <Constraint Name="AllowedValues">
+            <NominalScaledType>
+              <RequiredValue>In</RequiredValue>
+              <RequiredValue>Out</RequiredValue>
+              <RequiredValue>InOut</RequiredValue>
+            </NominalScaledType>
+          </Constraint>
+        </Attribute>
+      </InterfaceClass>
+      <InterfaceClass Name="Product_ThermalContact_INOUT" RefBaseClassPath="TE_InterfaceClassLibrary/Product">
+        <Attribute Name="Direction" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/Direction">
+          <DefaultValue>InOut</DefaultValue>
+          <Value>InOut</Value>
+          <Constraint Name="AllowedValues">
+            <NominalScaledType>
+              <RequiredValue>In</RequiredValue>
+              <RequiredValue>Out</RequiredValue>
+              <RequiredValue>InOut</RequiredValue>
+            </NominalScaledType>
+          </Constraint>
+        </Attribute>
+        <Attribute Name="Temperature" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Temperature" Unit="°C" />
+      </InterfaceClass>
+    </InterfaceClass>
+    <InterfaceClass Name="Signal">
+      <InterfaceClass Name="Digital_IN" RefBaseClassPath="TE_InterfaceClassLibrary/Signal" />
+      <InterfaceClass Name="Digital_OUT" RefBaseClassPath="TE_InterfaceClassLibrary/Signal" />
+      <InterfaceClass Name="Analog_IN" RefBaseClassPath="TE_InterfaceClassLibrary/Signal" />
+      <InterfaceClass Name="Analog_OUT" RefBaseClassPath="TE_InterfaceClassLibrary/Signal" />
+      <InterfaceClass Name="Signal" />
+    </InterfaceClass>
+  </InterfaceClassLib>
+  <InterfaceClassLib Name="InterfaceClassLib">
+    <Version>0</Version>
+  </InterfaceClassLib>
+  <InterfaceClassLib Name="AutomationMLInterfaceClassLib">
+    <Description>Standard Automation Markup Language Interface Class Library</Description>
+    <Version>2.10.0</Version>
+    <InterfaceClass Name="AutomationMLBaseInterface">
+      <InterfaceClass Name="Order" RefBaseClassPath="AutomationMLBaseInterface">
+        <Attribute Name="Direction" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/Direction" />
+      </InterfaceClass>
+      <InterfaceClass Name="Port" RefBaseClassPath="AutomationMLBaseInterface">
+        <Attribute Name="Direction" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/Direction">
+          <Constraint Name="AllowedValues">
+            <NominalScaledType>
+              <RequiredValue>In</RequiredValue>
+              <RequiredValue>Out</RequiredValue>
+              <RequiredValue>InOut</RequiredValue>
+            </NominalScaledType>
+          </Constraint>
+        </Attribute>
+        <Attribute Name="Cardinality" RefAttributeType="AutomationMLBaseAttributeTypeLib/Cardinality">
+          <Attribute Name="MinOccur" AttributeDataType="xs:unsignedInt" />
+          <Attribute Name="MaxOccur" AttributeDataType="xs:unsignedInt" />
+        </Attribute>
+        <Attribute Name="Category" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/Category" />
+      </InterfaceClass>
+      <InterfaceClass Name="PPRConnector" RefBaseClassPath="AutomationMLBaseInterface" />
+      <InterfaceClass Name="ExternalDataConnector" RefBaseClassPath="AutomationMLBaseInterface">
+        <Attribute Name="refURI" AttributeDataType="xs:anyURI" RefAttributeType="AutomationMLBaseAttributeTypeLib/refURI" />
+        <InterfaceClass Name="COLLADAInterface" RefBaseClassPath="ExternalDataConnector" />
+        <InterfaceClass Name="PLCopenXMLInterface" RefBaseClassPath="ExternalDataConnector" />
+        <InterfaceClass Name="ExternalDataReference" RefBaseClassPath="ExternalDataConnector">
+          <Attribute Name="MIMEType" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/MIMEType" />
+        </InterfaceClass>
+      </InterfaceClass>
+      <InterfaceClass Name="Communication" RefBaseClassPath="AutomationMLBaseInterface">
+        <InterfaceClass Name="SignalInterface" RefBaseClassPath="Communication" />
+      </InterfaceClass>
+    </InterfaceClass>
+  </InterfaceClassLib>
+  <RoleClassLib Name="AutomationMLBaseRoleClassLib">
+    <Description>Automation Markup Language base role class library</Description>
+    <Version>2.10.0</Version>
+    <RoleClass Name="AutomationMLBaseRole">
+      <RoleClass Name="Group" RefBaseClassPath="AutomationMLBaseRole">
+        <Attribute Name="AssociatedFacet" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/AssociatedFacet" />
+      </RoleClass>
+      <RoleClass Name="Facet" RefBaseClassPath="AutomationMLBaseRole" />
+      <RoleClass Name="Resource" RefBaseClassPath="AutomationMLBaseRole" />
+      <RoleClass Name="Product" RefBaseClassPath="AutomationMLBaseRole" />
+      <RoleClass Name="Process" RefBaseClassPath="AutomationMLBaseRole" />
+      <RoleClass Name="Structure" RefBaseClassPath="AutomationMLBaseRole">
+        <RoleClass Name="ProductStructure" RefBaseClassPath="Structure" />
+        <RoleClass Name="ProcessStructure" RefBaseClassPath="Structure" />
+        <RoleClass Name="ResourceStructure" RefBaseClassPath="Structure" />
+      </RoleClass>
+      <RoleClass Name="ExternalData" RefBaseClassPath="AutomationMLBaseRole" />
+    </RoleClass>
+  </RoleClassLib>
+  <SystemUnitClassLib Name="TE_SystemUnitClassLibrary">
+    <Version>0</Version>
+    <SystemUnitClass Name="Tank" ID="d0fb4fc8-32c2-4206-9f57-d0c24d742107" RefBaseClassPath="TE_SystemUnitClassLibrary/Vessel">
+      <Attribute Name="Level" AttributeDataType="xs:double" Unit="%" RefAttributeType="AttributeTypeLib/SystemUnitAttribute/Level" />
+      <Attribute Name="Temperature" AttributeDataType="xs:double" Unit="°C" />
+      <Attribute Name="Pressure" AttributeDataType="xs:boolean" Unit="kPa" />
+      <Attribute Name="Height" AttributeDataType="xs:string" Unit="m" />
+      <Attribute Name="Area" AttributeDataType="xs:string" Unit="m^2" />
+      <SupportedRoleClass RefRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+    </SystemUnitClass>
+    <SystemUnitClass Name="Separator" ID="008ced91-789d-4185-89af-856a65f97ff1">
+      <SupportedRoleClass RefRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+      <SystemUnitClass Name="Gas_Phase" ID="1d0b1093-a7dd-45a7-b81e-48211ddf27da" RefBaseClassPath="TE_SystemUnitClassLibrary/Tank" />
+      <SystemUnitClass Name="Liquid_Phase" ID="d43ed872-972c-4afe-84d1-93e2f526a7a2" RefBaseClassPath="TE_SystemUnitClassLibrary/Tank" />
+    </SystemUnitClass>
+    <SystemUnitClass Name="Vessel" ID="8c0d1818-d0fe-425f-aca1-8fbe72e111aa">
+      <Attribute Name="Pressure" AttributeDataType="xs:double" Unit="kPa" RefAttributeType="AttributeTypeLib/ProductAttribute/Pressure" />
+      <Attribute Name="Temperature" AttributeDataType="xs:double" Unit="°C" RefAttributeType="AttributeTypeLib/ProductAttribute/Temperature">
+        <DefaultValue>3</DefaultValue>
+      </Attribute>
+      <ExternalInterface Name="Product_OUT" ID="1f607fcd-5fb0-4de2-8279-18ea3cdcb0ff" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_OUT" />
+      <ExternalInterface Name="Product_IN" ID="de9b7e6e-f0dd-45e5-bd97-63275730d5bb" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_IN">
+        <Attribute Name="Direction" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/Direction">
+          <Constraint Name="AllowedValues">
+            <NominalScaledType>
+              <RequiredValue>In</RequiredValue>
+              <RequiredValue>Out</RequiredValue>
+              <RequiredValue>InOut</RequiredValue>
+            </NominalScaledType>
+          </Constraint>
+        </Attribute>
+      </ExternalInterface>
+      <SupportedRoleClass RefRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+    </SystemUnitClass>
+    <SystemUnitClass Name="Pipe" ID="1caad965-32e4-4c04-8bae-e28dda6b5be4" RefBaseClassPath="TE_SystemUnitClassLibrary/Vessel">
+      <Revision>
+        <RevisionDate>2025-05-15T10:44:24.2970631+02:00</RevisionDate>
+        <NewVersion>TE_SystemUnitClassLibrary/Filter/Filter1</NewVersion>
+        <AuthorName>Mitarbeiter</AuthorName>
+      </Revision>
+      <Attribute Name="Flow" AttributeDataType="xs:float" RefAttributeType="AttributeTypeLib/SystemUnitAttribute/Flow" Unit="m^3/h" />
+      <Attribute Name="Pressure" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Pressure" Unit="kPa">
+        <Constraint Name="">
+          <OrdinalScaledType />
+        </Constraint>
+      </Attribute>
+      <Attribute Name="Temperature" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Temperature" Unit="°C">
+        <Constraint Name="">
+          <OrdinalScaledType>
+            <RequiredMinValue>-273</RequiredMinValue>
+          </OrdinalScaledType>
+        </Constraint>
+      </Attribute>
+      <Attribute Name="Lenght" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/ParameterAttributeType/Lenght" />
+      <Attribute Name="Diameter" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/ParameterAttributeType/Diameter" />
+      <Attribute Name="Roughness" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/ParameterAttributeType/Roughness" />
+      <Attribute Name="HDiff" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/ParameterAttributeType/HDiff" />
+      <SupportedRoleClass RefRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+    </SystemUnitClass>
+    <SystemUnitClass Name="Condenser" ID="269636f5-89b4-48ad-a3a0-e4b30eaabefd">
+      <SupportedRoleClass RefRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+      <SystemUnitClass Name="Condenser_Product_Side" ID="70110953-af0c-4730-9cd0-c8ff180ab8fa" RefBaseClassPath="TE_SystemUnitClassLibrary/Pipe">
+        <ExternalInterface Name="Product_ThermalContact" ID="10e87caf-4963-4a95-822e-476fe65efcbd" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_ThermalContact_INOUT">
+          <Attribute Name="Direction" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/Direction">
+            <DefaultValue>InOut</DefaultValue>
+            <Value>InOut</Value>
+            <Constraint Name="AllowedValues">
+              <NominalScaledType>
+                <RequiredValue>In</RequiredValue>
+                <RequiredValue>Out</RequiredValue>
+                <RequiredValue>InOut</RequiredValue>
+              </NominalScaledType>
+            </Constraint>
+          </Attribute>
+          <Attribute Name="Temperature" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Temperature" Unit="°C" />
+        </ExternalInterface>
+      </SystemUnitClass>
+      <SystemUnitClass Name="Condenser_Water_Side" ID="2bef0974-7950-4f1c-9ce9-1288b91f9b4b" RefBaseClassPath="TE_SystemUnitClassLibrary/Pipe">
+        <ExternalInterface Name="Product_ThermalContact" ID="a9223545-8b3c-45f1-b9ff-9ea9d435b9e2" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_ThermalContact_INOUT">
+          <Attribute Name="Direction" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/Direction">
+            <DefaultValue>InOut</DefaultValue>
+            <Value>InOut</Value>
+            <Constraint Name="AllowedValues">
+              <NominalScaledType>
+                <RequiredValue>In</RequiredValue>
+                <RequiredValue>Out</RequiredValue>
+                <RequiredValue>InOut</RequiredValue>
+              </NominalScaledType>
+            </Constraint>
+          </Attribute>
+          <Attribute Name="Temperature" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Temperature" Unit="°C" />
+        </ExternalInterface>
+      </SystemUnitClass>
+    </SystemUnitClass>
+    <SystemUnitClass Name="Stripper" ID="4c7bc40a-f1e2-4250-8f30-882451f791ac" RefBaseClassPath="TE_SystemUnitClassLibrary/Tank">
+      <SupportedRoleClass RefRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+    </SystemUnitClass>
+    <SystemUnitClass Name="Reactor" ID="a32746ee-8a36-425f-b7e1-3769068fe15a">
+      <Attribute Name="Rotational_Speed" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/SystemUnitAttribute/Rotational_Speed" Unit="rpm" />
+      <SupportedRoleClass RefRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+      <SystemUnitClass Name="Reactor_Product_Tank" ID="a9b45e74-1ea3-4fc6-82cf-d6a353e81f31" RefBaseClassPath="TE_SystemUnitClassLibrary/Tank">
+        <ExternalInterface Name="Product_ThermalContact" ID="22aec921-b81d-46ac-92d1-8d08d3cb13b0" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_ThermalContact_INOUT">
+          <Attribute Name="Direction" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/Direction">
+            <DefaultValue>InOut</DefaultValue>
+            <Value>InOut</Value>
+            <Constraint Name="AllowedValues">
+              <NominalScaledType>
+                <RequiredValue>In</RequiredValue>
+                <RequiredValue>Out</RequiredValue>
+                <RequiredValue>InOut</RequiredValue>
+              </NominalScaledType>
+            </Constraint>
+          </Attribute>
+          <Attribute Name="Temperature" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Temperature" Unit="°C" />
+        </ExternalInterface>
+      </SystemUnitClass>
+      <SystemUnitClass Name="Reactor_Cooling_Pipes" ID="8dd230ea-a44b-4075-a66d-99c61e047fe0" RefBaseClassPath="TE_SystemUnitClassLibrary/Pipe">
+        <ExternalInterface Name="Product_ThermalContact" ID="d982dec4-2954-4a5f-a6d2-4b563e313e87" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_ThermalContact_INOUT">
+          <Attribute Name="Direction" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/Direction">
+            <DefaultValue>InOut</DefaultValue>
+            <Value>InOut</Value>
+            <Constraint Name="AllowedValues">
+              <NominalScaledType>
+                <RequiredValue>In</RequiredValue>
+                <RequiredValue>Out</RequiredValue>
+                <RequiredValue>InOut</RequiredValue>
+              </NominalScaledType>
+            </Constraint>
+          </Attribute>
+          <Attribute Name="Temperature" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Temperature" Unit="°C" />
+        </ExternalInterface>
+      </SystemUnitClass>
+    </SystemUnitClass>
+    <SystemUnitClass Name="Reboiler" ID="30345860-f8d1-4868-859f-845bc70f8fc3">
+      <SupportedRoleClass RefRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+      <SystemUnitClass Name="Reboiler_Product_Side" ID="eccea69c-e2bb-4680-a61e-d5b5900c30b8" RefBaseClassPath="TE_SystemUnitClassLibrary/Pipe">
+        <ExternalInterface Name="Product_ThermalContact" ID="98222bbc-cd41-4119-940f-b00129120a2c" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_ThermalContact_INOUT">
+          <Attribute Name="Direction" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/Direction">
+            <DefaultValue>InOut</DefaultValue>
+            <Value>InOut</Value>
+            <Constraint Name="AllowedValues">
+              <NominalScaledType>
+                <RequiredValue>In</RequiredValue>
+                <RequiredValue>Out</RequiredValue>
+                <RequiredValue>InOut</RequiredValue>
+              </NominalScaledType>
+            </Constraint>
+          </Attribute>
+          <Attribute Name="Temperature" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Temperature" Unit="°C" />
+        </ExternalInterface>
+      </SystemUnitClass>
+      <SystemUnitClass Name="Reboiler_Steam_Side" ID="2eabae19-0a58-4ceb-8a12-24a5064c031a" RefBaseClassPath="TE_SystemUnitClassLibrary/Pipe">
+        <ExternalInterface Name="Product_ThermalContact" ID="ad792bad-89d2-4279-a799-e76fa06406f6" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_ThermalContact_INOUT">
+          <Attribute Name="Direction" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/Direction">
+            <DefaultValue>InOut</DefaultValue>
+            <Value>InOut</Value>
+            <Constraint Name="AllowedValues">
+              <NominalScaledType>
+                <RequiredValue>In</RequiredValue>
+                <RequiredValue>Out</RequiredValue>
+                <RequiredValue>InOut</RequiredValue>
+              </NominalScaledType>
+            </Constraint>
+          </Attribute>
+          <Attribute Name="Temperature" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Temperature" Unit="°C" />
+        </ExternalInterface>
+      </SystemUnitClass>
+    </SystemUnitClass>
+    <SystemUnitClass Name="Valve" ID="569228e5-fd9d-4273-91ec-600c7c13ff6a" RefBaseClassPath="TE_SystemUnitClassLibrary/Pipe">
+      <Attribute Name="State" AttributeDataType="xs:float" RefAttributeType="AttributeTypeLib/SystemUnitAttribute/State" Unit="%">
+        <Constraint Name="">
+          <OrdinalScaledType>
+            <RequiredMaxValue>100</RequiredMaxValue>
+            <RequiredMinValue>0</RequiredMinValue>
+          </OrdinalScaledType>
+        </Constraint>
+      </Attribute>
+      <Attribute Name="PDropNom" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/ParameterAttributeType/PDropNom" />
+      <Attribute Name="MFNominal" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/ParameterAttributeType/MFNominal" />
+      <Attribute Name="Flow" AttributeDataType="xs:float" RefAttributeType="AttributeTypeLib/SystemUnitAttribute/Flow" Unit="m^3/h" />
+      <Attribute Name="Pressure" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Pressure" Unit="kPa">
+        <Constraint Name="">
+          <OrdinalScaledType />
+        </Constraint>
+      </Attribute>
+      <Attribute Name="Temperature" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Temperature" Unit="°C">
+        <Constraint Name="">
+          <OrdinalScaledType>
+            <RequiredMinValue>-273</RequiredMinValue>
+          </OrdinalScaledType>
+        </Constraint>
+      </Attribute>
+      <ExternalInterface Name="Digital_IN" ID="bf74ee42-7f85-4470-9990-899d8dd03936" RefBaseClassPath="TE_InterfaceClassLibrary/Signal/Digital_IN" />
+      <SupportedRoleClass RefRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+    </SystemUnitClass>
+    <SystemUnitClass Name="Product_Source" ID="3e999d25-70e7-4e94-9c1e-f04d589306c5" RefBaseClassPath="TE_SystemUnitClassLibrary/Tank">
+      <SupportedRoleClass RefRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+    </SystemUnitClass>
+    <SystemUnitClass Name="Product_Sink" ID="e261d530-305f-4311-b607-addf49c0178d" RefBaseClassPath="TE_SystemUnitClassLibrary/Tank">
+      <SupportedRoleClass RefRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+    </SystemUnitClass>
+    <SystemUnitClass Name="Sensor" ID="e6a8e521-d8de-4a10-971c-e88087a122e5">
+      <ExternalInterface Name="Digital_OUT" ID="7fb5fef9-ad48-4f51-a9db-5f93e4184de1" RefBaseClassPath="TE_InterfaceClassLibrary/Signal/Digital_OUT" />
+      <SupportedRoleClass RefRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+    </SystemUnitClass>
+    <SystemUnitClass Name="Sensor_Flow" ID="b56c5aea-f0d5-4d58-ab1a-38286a65134e" RefBaseClassPath="TE_SystemUnitClassLibrary/Sensor">
+      <Attribute Name="Measurement_Flow" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/SensorAttribute/Measurement_Flow" Unit="m^3/h" />
+      <SupportedRoleClass RefRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+    </SystemUnitClass>
+    <SystemUnitClass Name="Sensor_Level" ID="211e82f2-7be7-4231-ae23-185ee5179edf" RefBaseClassPath="TE_SystemUnitClassLibrary/Sensor">
+      <Attribute Name="Measurement_Level" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/SensorAttribute/Measurement_Level" />
+      <SupportedRoleClass RefRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+    </SystemUnitClass>
+    <SystemUnitClass Name="Sensor_Pressure" ID="7f516e52-6e92-41f3-8afd-812192b453dc" RefBaseClassPath="TE_SystemUnitClassLibrary/Sensor">
+      <Attribute Name="Measurement_Pressure" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/SensorAttribute/Measurement_Pressure" Unit="kPa">
+        <Constraint Name="">
+          <OrdinalScaledType />
+        </Constraint>
+      </Attribute>
+      <SupportedRoleClass RefRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+    </SystemUnitClass>
+    <SystemUnitClass Name="Sensor_Temperature" ID="030244cc-240b-4621-ab19-a0bcad26e62d" RefBaseClassPath="TE_SystemUnitClassLibrary/Sensor">
+      <Attribute Name="Measurement_Temperature" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/SensorAttribute/Measurement_Temperature" Unit="°C">
+        <Constraint Name="">
+          <OrdinalScaledType>
+            <RequiredMinValue>-273</RequiredMinValue>
+          </OrdinalScaledType>
+        </Constraint>
+      </Attribute>
+      <SupportedRoleClass RefRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+    </SystemUnitClass>
+    <SystemUnitClass Name="Sensor_Concentration" ID="e048fd58-ab15-41cc-b9d3-c0cb6077ed03" RefBaseClassPath="TE_SystemUnitClassLibrary/Sensor">
+      <Attribute Name="Measurement_Concentration" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/SensorAttribute/Measurement_Concentration">
+        <Attribute Name="Concentration_A" AttributeDataType="xs:double" Unit="%">
+          <Constraint Name="">
+            <OrdinalScaledType>
+              <RequiredMaxValue>100</RequiredMaxValue>
+            </OrdinalScaledType>
+          </Constraint>
+        </Attribute>
+        <Attribute Name="Concentration_B" AttributeDataType="xs:double" Unit="%">
+          <Constraint Name="">
+            <OrdinalScaledType>
+              <RequiredMaxValue>100</RequiredMaxValue>
+              <RequiredMinValue>0</RequiredMinValue>
+            </OrdinalScaledType>
+          </Constraint>
+        </Attribute>
+        <Attribute Name="Concentration_C" AttributeDataType="xs:double" Unit="%">
+          <Constraint Name="">
+            <OrdinalScaledType>
+              <RequiredMaxValue>100</RequiredMaxValue>
+              <RequiredMinValue>0</RequiredMinValue>
+            </OrdinalScaledType>
+          </Constraint>
+        </Attribute>
+        <Attribute Name="Concentration_D" AttributeDataType="xs:double" Unit="%">
+          <Constraint Name="">
+            <OrdinalScaledType>
+              <RequiredMaxValue>100</RequiredMaxValue>
+              <RequiredMinValue>0</RequiredMinValue>
+            </OrdinalScaledType>
+          </Constraint>
+        </Attribute>
+        <Attribute Name="Concentration_E" AttributeDataType="xs:double" Unit="%">
+          <Constraint Name="">
+            <OrdinalScaledType>
+              <RequiredMaxValue>100</RequiredMaxValue>
+              <RequiredMinValue>0</RequiredMinValue>
+            </OrdinalScaledType>
+          </Constraint>
+        </Attribute>
+        <Attribute Name="Concentration_F" AttributeDataType="xs:double" Unit="%">
+          <Constraint Name="">
+            <OrdinalScaledType>
+              <RequiredMaxValue>100</RequiredMaxValue>
+              <RequiredMinValue>0</RequiredMinValue>
+            </OrdinalScaledType>
+          </Constraint>
+        </Attribute>
+        <Attribute Name="Concentration_H" AttributeDataType="xs:double" Unit="%">
+          <Constraint Name="">
+            <OrdinalScaledType>
+              <RequiredMaxValue>100</RequiredMaxValue>
+              <RequiredMinValue>0</RequiredMinValue>
+            </OrdinalScaledType>
+          </Constraint>
+        </Attribute>
+      </Attribute>
+      <SupportedRoleClass RefRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+    </SystemUnitClass>
+    <SystemUnitClass Name="Pump" ID="ab6dbea7-ea20-4d8d-a752-55203fa90250" RefBaseClassPath="TE_SystemUnitClassLibrary/Pipe">
+      <Attribute Name="State" AttributeDataType="xs:float" RefAttributeType="AttributeTypeLib/SystemUnitAttribute/State" Unit="%">
+        <Constraint Name="">
+          <OrdinalScaledType>
+            <RequiredMaxValue>100</RequiredMaxValue>
+            <RequiredMinValue>0</RequiredMinValue>
+          </OrdinalScaledType>
+        </Constraint>
+      </Attribute>
+      <Attribute Name="Rotational_Speed" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/SystemUnitAttribute/Rotational_Speed" Unit="rpm" />
+      <Attribute Name="Power" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/SystemUnitAttribute/Power" Unit="kW">
+        <Constraint Name="">
+          <OrdinalScaledType>
+            <RequiredMinValue>0</RequiredMinValue>
+          </OrdinalScaledType>
+        </Constraint>
+      </Attribute>
+      <Attribute Name="Flow" AttributeDataType="xs:float" RefAttributeType="AttributeTypeLib/SystemUnitAttribute/Flow" Unit="m^3/h" />
+      <Attribute Name="Pressure" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Pressure" Unit="kPa">
+        <Constraint Name="">
+          <OrdinalScaledType />
+        </Constraint>
+      </Attribute>
+      <Attribute Name="Temperature" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Temperature" Unit="°C">
+        <Constraint Name="">
+          <OrdinalScaledType>
+            <RequiredMinValue>-273</RequiredMinValue>
+          </OrdinalScaledType>
+        </Constraint>
+      </Attribute>
+      <Attribute Name="PumpVolume" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/ParameterAttributeType/PumpVolume" />
+      <SupportedRoleClass RefRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+    </SystemUnitClass>
+    <SystemUnitClass Name="Sensor_Rotational_Speed" ID="eb668142-41a1-4bdb-947f-d2ec9d1f1bec">
+      <Attribute Name="Measurement_Rotational_Speed" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/SensorAttribute/Measurement_Rotational_Speed" />
+    </SystemUnitClass>
+    <SystemUnitClass Name="Compressor" ID="e22da09b-8363-469d-8e44-2212e9e990fa" RefBaseClassPath="TE_SystemUnitClassLibrary/Pump" />
+    <SystemUnitClass Name="RatioController" ID="11208b4d-53ce-4c0d-81d6-021137c01564">
+      <ExternalInterface Name="Digital_A_IN" ID="29e9dc8d-6260-4add-8592-5a0a8c7b6f25" RefBaseClassPath="TE_InterfaceClassLibrary/Signal/Digital_IN" />
+      <ExternalInterface Name="Digital_B_IN" ID="c63419d9-7f1a-41b7-90f9-a8534d58b595" RefBaseClassPath="TE_InterfaceClassLibrary/Signal/Digital_IN" />
+      <ExternalInterface Name="Digital_OUT" ID="51e7f39c-12f1-461a-808a-eda22a3d9579" RefBaseClassPath="TE_InterfaceClassLibrary/Signal/Digital_OUT" />
+    </SystemUnitClass>
+    <SystemUnitClass Name="Controller" ID="7595b1fe-9481-491a-a2f9-952662c12d03">
+      <ExternalInterface Name="Digital_IN" ID="1149fb71-db85-4657-8119-0648fded3fc0" RefBaseClassPath="TE_InterfaceClassLibrary/Signal/Digital_IN" />
+      <ExternalInterface Name="Digital_OUT" ID="9f6d1702-6ed9-45a8-9c16-12187706de70" RefBaseClassPath="TE_InterfaceClassLibrary/Signal/Digital_OUT" />
+    </SystemUnitClass>
+    <SystemUnitClass Name="Sensor_State" ID="29954c4c-a520-4c9b-8815-ad22fc2057b4" RefBaseClassPath="TE_SystemUnitClassLibrary/Sensor">
+      <Attribute Name="Measurement_State" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/SensorAttribute/Measurement_State" />
+      <SupportedRoleClass RefRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+    </SystemUnitClass>
+    <SystemUnitClass Name="Sensor_Power" ID="5dfffd74-b6a7-4555-92e1-3bb49e9ad2dd" RefBaseClassPath="TE_SystemUnitClassLibrary/Sensor">
+      <Attribute Name="Measurement_Power" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/SensorAttribute/Measurement_Power" />
+      <SupportedRoleClass RefRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+    </SystemUnitClass>
+    <SystemUnitClass Name="Tee" ID="702522e3-4096-464b-aab3-cd96d040ba3d">
+      <Attribute Name="TVol" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/ParameterAttributeType/TVol" />
+      <Attribute Name="Flow" AttributeDataType="xs:float" RefAttributeType="AttributeTypeLib/SystemUnitAttribute/Flow" Unit="m^3/h" />
+      <Attribute Name="Temperature" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Temperature" Unit="°C">
+        <Constraint Name="">
+          <OrdinalScaledType>
+            <RequiredMinValue>-273</RequiredMinValue>
+          </OrdinalScaledType>
+        </Constraint>
+      </Attribute>
+      <Attribute Name="Pressure" AttributeDataType="xs:double" RefAttributeType="AttributeTypeLib/ProductAttribute/Pressure" Unit="kPa">
+        <Constraint Name="">
+          <OrdinalScaledType />
+        </Constraint>
+      </Attribute>
+      <ExternalInterface Name="Product_IN" ID="3f0c2465-f8e1-4f0c-bc06-35eff6c6f477" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_IN">
+        <Attribute Name="Direction" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/Direction">
+          <DefaultValue>In</DefaultValue>
+          <Value>In</Value>
+          <Constraint Name="AllowedValues">
+            <NominalScaledType>
+              <RequiredValue>In</RequiredValue>
+              <RequiredValue>Out</RequiredValue>
+              <RequiredValue>InOut</RequiredValue>
+            </NominalScaledType>
+          </Constraint>
+        </Attribute>
+      </ExternalInterface>
+      <ExternalInterface Name="Product_OUT" ID="53c4a224-fdf2-4e00-8c8b-27faa6311c91" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_OUT">
+        <Attribute Name="Direction" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/Direction">
+          <DefaultValue>Out</DefaultValue>
+          <Value>Out</Value>
+          <Constraint Name="AllowedValues">
+            <NominalScaledType>
+              <RequiredValue>In</RequiredValue>
+              <RequiredValue>Out</RequiredValue>
+              <RequiredValue>InOut</RequiredValue>
+            </NominalScaledType>
+          </Constraint>
+        </Attribute>
+      </ExternalInterface>
+      <ExternalInterface Name="Product_INOUT" ID="32b43005-6c3e-4524-b94a-14ce60ddd2e1" RefBaseClassPath="TE_InterfaceClassLibrary/Product/Product_INOUT">
+        <Attribute Name="Direction" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/Direction">
+          <DefaultValue>InOut</DefaultValue>
+          <Value>InOut</Value>
+          <Constraint Name="AllowedValues">
+            <NominalScaledType>
+              <RequiredValue>In</RequiredValue>
+              <RequiredValue>Out</RequiredValue>
+              <RequiredValue>InOut</RequiredValue>
+            </NominalScaledType>
+          </Constraint>
+        </Attribute>
+      </ExternalInterface>
+    </SystemUnitClass>
+    <SystemUnitClass Name="Filter" ID="8ccd4404-7fa1-4d8e-acbf-e3295aa51972" RefBaseClassPath="TE_SystemUnitClassLibrary/Pipe">
+      <Attribute Name="Flow" AttributeDataType="xs:string" />
+      <Attribute Name="Temperature" AttributeDataType="xs:string" />
+      <Attribute Name="Pressure" AttributeDataType="xs:string" />
+      <Attribute Name="Clogging" AttributeDataType="xs:string" />
+      <Attribute Name="PDropNom" AttributeDataType="xs:string" />
+      <SupportedRoleClass RefRoleClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Resource" />
+    </SystemUnitClass>
+    <SystemUnitClass Name="Heat_Exchanger" ID="ea85893c-97f8-4518-88da-711831d2ec6f" RefBaseClassPath="TE_SystemUnitClassLibrary/Pipe">
+      <Attribute Name="Flow" AttributeDataType="xs:string" />
+      <Attribute Name="Temperature" AttributeDataType="xs:string" />
+      <Attribute Name="Pressure" AttributeDataType="xs:string" />
+      <Attribute Name="CSurface" AttributeDataType="xs:string" />
+      <Attribute Name="HTransfer" AttributeDataType="xs:string" />
+    </SystemUnitClass>
+  </SystemUnitClassLib>
+  <AttributeTypeLib Name="AttributeTypeLib">
+    <Version>0</Version>
+    <AttributeType Name="ProductAttribute" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/ListType">
+      <AttributeType Name="Chemical Concentration" AttributeDataType="xs:double" RefAttributeType="AutomationMLBaseAttributeTypeLib/LocalizedAttribute" />
+      <AttributeType Name="Pressure" AttributeDataType="xs:double" Unit="kPa" RefAttributeType="AutomationMLBaseAttributeTypeLib/LocalizedAttribute">
+        <Constraint Name="">
+          <OrdinalScaledType />
+        </Constraint>
+      </AttributeType>
+      <AttributeType Name="Temperature" AttributeDataType="xs:double" Unit="°C" RefAttributeType="AutomationMLBaseAttributeTypeLib/LocalizedAttribute">
+        <Constraint Name="">
+          <OrdinalScaledType>
+            <RequiredMinValue>-273</RequiredMinValue>
+          </OrdinalScaledType>
+        </Constraint>
+      </AttributeType>
+    </AttributeType>
+    <AttributeType Name="SystemUnitAttribute" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/ListType">
+      <AttributeType Name="Level" AttributeDataType="xs:float" Unit="%" RefAttributeType="AutomationMLBaseAttributeTypeLib/LocalizedAttribute">
+        <Constraint Name="">
+          <OrdinalScaledType>
+            <RequiredMaxValue>100</RequiredMaxValue>
+            <RequiredMinValue>0</RequiredMinValue>
+          </OrdinalScaledType>
+        </Constraint>
+      </AttributeType>
+      <AttributeType Name="Flow" AttributeDataType="xs:float" Unit="m^3/h" RefAttributeType="AutomationMLBaseAttributeTypeLib/LocalizedAttribute" />
+      <AttributeType Name="State" AttributeDataType="xs:float" Unit="%" RefAttributeType="AutomationMLBaseAttributeTypeLib/LocalizedAttribute">
+        <Constraint Name="">
+          <OrdinalScaledType>
+            <RequiredMaxValue>100</RequiredMaxValue>
+            <RequiredMinValue>0</RequiredMinValue>
+          </OrdinalScaledType>
+        </Constraint>
+      </AttributeType>
+      <AttributeType Name="Power" AttributeDataType="xs:double" Unit="kW" RefAttributeType="AutomationMLBaseAttributeTypeLib/LocalizedAttribute">
+        <Constraint Name="">
+          <OrdinalScaledType>
+            <RequiredMinValue>0</RequiredMinValue>
+          </OrdinalScaledType>
+        </Constraint>
+      </AttributeType>
+      <AttributeType Name="Rotational_Speed" AttributeDataType="xs:double" Unit="rpm" RefAttributeType="AutomationMLBaseAttributeTypeLib/LocalizedAttribute" />
+    </AttributeType>
+    <AttributeType Name="SensorAttribute" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/ListType">
+      <AttributeType Name="Measurement_Pressure" AttributeDataType="xs:double" Unit="kPa" RefAttributeType="AutomationMLBaseAttributeTypeLib/LocalizedAttribute">
+        <DefaultValue></DefaultValue>
+        <Constraint Name="">
+          <OrdinalScaledType />
+        </Constraint>
+      </AttributeType>
+      <AttributeType Name="Measurement_Temperature" AttributeDataType="xs:double" Unit="°C" RefAttributeType="AutomationMLBaseAttributeTypeLib/LocalizedAttribute">
+        <Constraint Name="">
+          <OrdinalScaledType>
+            <RequiredMinValue>-273</RequiredMinValue>
+          </OrdinalScaledType>
+        </Constraint>
+      </AttributeType>
+      <AttributeType Name="Measurement_Level" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/LocalizedAttribute" />
+      <AttributeType Name="Measurement_Flow" AttributeDataType="xs:double" Unit="m^3/h" RefAttributeType="AutomationMLBaseAttributeTypeLib/LocalizedAttribute" />
+      <AttributeType Name="Measurement_Concentration" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/LocalizedAttribute">
+        <Attribute Name="Concentration_A" AttributeDataType="xs:double" Unit="%">
+          <Constraint Name="">
+            <OrdinalScaledType>
+              <RequiredMaxValue>100</RequiredMaxValue>
+            </OrdinalScaledType>
+          </Constraint>
+        </Attribute>
+        <Attribute Name="Concentration_B" AttributeDataType="xs:double" Unit="%">
+          <Constraint Name="">
+            <OrdinalScaledType>
+              <RequiredMaxValue>100</RequiredMaxValue>
+              <RequiredMinValue>0</RequiredMinValue>
+            </OrdinalScaledType>
+          </Constraint>
+        </Attribute>
+        <Attribute Name="Concentration_C" AttributeDataType="xs:double" Unit="%">
+          <Constraint Name="">
+            <OrdinalScaledType>
+              <RequiredMaxValue>100</RequiredMaxValue>
+              <RequiredMinValue>0</RequiredMinValue>
+            </OrdinalScaledType>
+          </Constraint>
+        </Attribute>
+        <Attribute Name="Concentration_D" AttributeDataType="xs:double" Unit="%">
+          <Constraint Name="">
+            <OrdinalScaledType>
+              <RequiredMaxValue>100</RequiredMaxValue>
+              <RequiredMinValue>0</RequiredMinValue>
+            </OrdinalScaledType>
+          </Constraint>
+        </Attribute>
+        <Attribute Name="Concentration_E" AttributeDataType="xs:double" Unit="%">
+          <Constraint Name="">
+            <OrdinalScaledType>
+              <RequiredMaxValue>100</RequiredMaxValue>
+              <RequiredMinValue>0</RequiredMinValue>
+            </OrdinalScaledType>
+          </Constraint>
+        </Attribute>
+        <Attribute Name="Concentration_F" AttributeDataType="xs:double" Unit="%">
+          <Constraint Name="">
+            <OrdinalScaledType>
+              <RequiredMaxValue>100</RequiredMaxValue>
+              <RequiredMinValue>0</RequiredMinValue>
+            </OrdinalScaledType>
+          </Constraint>
+        </Attribute>
+        <Attribute Name="Concentration_H" AttributeDataType="xs:double" Unit="%">
+          <Constraint Name="">
+            <OrdinalScaledType>
+              <RequiredMaxValue>100</RequiredMaxValue>
+              <RequiredMinValue>0</RequiredMinValue>
+            </OrdinalScaledType>
+          </Constraint>
+        </Attribute>
+      </AttributeType>
+      <AttributeType Name="Measurement_Rotational_Speed" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/LocalizedAttribute" />
+      <AttributeType Name="Measurement_State" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/LocalizedAttribute" />
+      <AttributeType Name="Measurement_Power" AttributeDataType="xs:string" />
+    </AttributeType>
+    <AttributeType Name="ParameterAttributeType" AttributeDataType="xs:string" RefAttributeType="AutomationMLBaseAttributeTypeLib/ListType">
+      <AttributeType Name="Lenght" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/ParameterAttributeType" />
+      <AttributeType Name="Diameter" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/ParameterAttributeType" />
+      <AttributeType Name="Roughness" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/ParameterAttributeType" />
+      <AttributeType Name="HDiff" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/ParameterAttributeType" />
+      <AttributeType Name="PDropNom" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/ParameterAttributeType" />
+      <AttributeType Name="MFNominal" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/ParameterAttributeType" />
+      <AttributeType Name="Rotational_Speed" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/ParameterAttributeType" />
+      <AttributeType Name="Area" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/ParameterAttributeType" />
+      <AttributeType Name="Height" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/ParameterAttributeType" />
+      <AttributeType Name="PumpVolume" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/ParameterAttributeType" />
+      <AttributeType Name="TVol" AttributeDataType="xs:string" RefAttributeType="AttributeTypeLib/ParameterAttributeType" />
+    </AttributeType>
+  </AttributeTypeLib>
+  <AttributeTypeLib Name="AutomationMLBaseAttributeTypeLib">
+    <Description>Standard Automation Markup Language Attribute Type Library</Description>
+    <Version>2.10.0</Version>
+    <AttributeType Name="Direction" AttributeDataType="xs:string">
+      <Constraint Name="AllowedValues">
+        <NominalScaledType>
+          <RequiredValue>In</RequiredValue>
+          <RequiredValue>Out</RequiredValue>
+          <RequiredValue>InOut</RequiredValue>
+        </NominalScaledType>
+      </Constraint>
+    </AttributeType>
+    <AttributeType Name="Cardinality">
+      <Attribute Name="MinOccur" AttributeDataType="xs:unsignedInt" />
+      <Attribute Name="MaxOccur" AttributeDataType="xs:unsignedInt" />
+    </AttributeType>
+    <AttributeType Name="Category" AttributeDataType="xs:string" />
+    <AttributeType Name="refURI" AttributeDataType="xs:anyURI" />
+    <AttributeType Name="AssociatedFacet" AttributeDataType="xs:string" />
+    <AttributeType Name="ListType" />
+    <AttributeType Name="OrderedListType" />
+    <AttributeType Name="LocalizedAttribute" AttributeDataType="xs:string" />
+    <AttributeType Name="AssociatedExternalValue">
+      <Attribute Name="refCAEXAttribute" />
+      <Attribute Name="refURI" RefAttributeType="AutomationMLBaseAttributeTypeLib/refURI" />
+      <Attribute Name="Direction" RefAttributeType="AutomationMLBaseAttributeTypeLib/Direction" />
+    </AttributeType>
+    <AttributeType Name="MIMEType" AttributeDataType="xs:string" />
+    <AttributeType Name="DocLang" AttributeDataType="xs:string" />
+  </AttributeTypeLib>
+</CAEXFile>

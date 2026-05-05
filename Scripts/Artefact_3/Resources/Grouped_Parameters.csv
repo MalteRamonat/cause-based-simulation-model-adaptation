@@ -1,0 +1,10 @@
+Parameter,Grouped_Variable_Name
+pipe_V201_Tee1.diameter,generic_pipe_diameter
+pipe_V202_Tee2.diameter,generic_pipe_diameter
+pipe_Tee2_Tee1.diameter,generic_pipe_diameter
+pipe_P201_FI271.diameter,generic_pipe_diameter
+pipe_V201_Tee1.roughness,generic_pipe_roughness
+pipe_V202_Tee2.roughness,generic_pipe_roughness
+pipe_Tee2_Tee1.roughness,generic_pipe_roughness
+pipe_P201_FI271.roughness,generic_pipe_roughness
+pipe_FI271_B204.roughness,generic_pipe_roughness
