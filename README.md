@@ -136,7 +136,10 @@ Cause-Based-Simulation-Model-Adaptation/
 
 ## Dataset
 
-The `datasets/` directory is not committed to the repository (see `.gitignore`).
+The `datasets/` directory contains a dataset obtained from a lab scale plant in `Sensors/Measurements_Clearnames`.
+The plant, dataset and simulation model are described in:
+https://github.com/MalteRamonat/fluid-mixing-anomaly-benchmark
+The `Sensors/Synthetic_Sensors` directory contains simulation model output of "TFS_Gasentspannung.mo" with 5% added noise. 
 The required structural input files for Artefact 1 and Artefact 2 are committed under:
 - `Scripts/Artefact_1/Resources/` — actuator/sensor input condition CSVs
 - `Scripts/Artefact_2/Resources/` — AutomationML plant description, designation tables, test-case Excel files
