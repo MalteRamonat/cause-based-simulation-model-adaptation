@@ -45,27 +45,28 @@ def dijkstra_worker(args: Tuple) -> Tuple[int, List[float]]:
     return row_index, row
 
 
-def parameter_dijkstra_worker(args: Tuple) -> Tuple[int, List[float], List[int]]:
+def parameter_dijkstra_worker(args: Tuple) -> Tuple[int, List[float], List[int], int]:
     """
     Worker function for parameter influence matrix computations.
-    
+
     Args:
         args: Tuple containing (param_index, parameter_list, sensor_list, graph_pickle)
-        
+
     Returns:
-        Tuple of (param_index, computed_row, path_lengths)
+        Tuple of (param_index, computed_row, path_lengths, neutral_count)
     """
     param_index, parameter_list, sensor_list, graph_pickle = args
-    
+
     try:
         graph = pickle.loads(graph_pickle)
     except Exception as e:
         print(f"Error deserializing graph: {e}")
-        return param_index, [0] * len(sensor_list), [1] * len(sensor_list)
-    
+        return param_index, [0] * len(sensor_list), [1] * len(sensor_list), 0
+
     row = []
     path_lengths = []
-    
+    neutral_count = 0
+
     for j in range(len(sensor_list)):
         if sensor_list[j]["AS"] is not None:
             try:
@@ -74,16 +75,17 @@ def parameter_dijkstra_worker(args: Tuple) -> Tuple[int, List[float], List[int]]
                     parameter_list[param_index].index,
                     sensor_list[j].index
                 )
-                
+
                 path_lengths.append(len(path) if len(path) > 0 else 1)
-                
+
                 if distance == -np.inf:
+                    neutral_count += 1
                     row.append(0)
                 elif distance > 0:
                     row.append(np.exp(-distance))
                 else:
                     row.append(-np.exp(distance))
-                    
+
             except Exception as e:
                 print(f"Error in parameter Dijkstra ({param_index}, {j}): {e}")
                 row.append(0)
@@ -91,8 +93,8 @@ def parameter_dijkstra_worker(args: Tuple) -> Tuple[int, List[float], List[int]]
         else:
             row.append(0)
             path_lengths.append(1)
-    
-    return param_index, row, path_lengths
+
+    return param_index, row, path_lengths, neutral_count
 
 
 def _compute_distance_row(graph, row_index: int, vertex_list: List) -> List[float]:
@@ -376,52 +378,54 @@ class ParallelMatrixCalculator:
         
         return matrix
     
-    def compute_parameter_matrix_parallel(self, graph, parameter_list: List, 
-                                        possible_alarm_list: List) -> Tuple[np.ndarray, np.ndarray]:
+    def compute_parameter_matrix_parallel(self, graph, parameter_list: List,
+                                        possible_alarm_list: List) -> Tuple[np.ndarray, np.ndarray, List[int]]:
         """
         Compute parameter influence matrix in parallel.
-        
+
         Args:
             graph: The graph object
             parameter_list: List of parameter vertices
             possible_alarm_list: List of possible alarm vertices
-            
+
         Returns:
-            Tuple of (parameter_matrix, path_length_matrix)
+            Tuple of (parameter_matrix, path_length_matrix, neutral_counts)
         """
         if len(parameter_list) == 0 or len(possible_alarm_list) == 0:
-            return np.array([]), np.array([])
-        
+            return np.array([]), np.array([]), []
+
         print(f"Computing parameter matrix with {self.max_processes} processes...")
-        
+
         # Serialize graph
         graph_pickle = pickle.dumps(graph)
-        
+
         # Prepare arguments
         args_list = [
             (i, parameter_list, possible_alarm_list, graph_pickle)
             for i in range(len(parameter_list))
         ]
-        
+
         t0 = time.time()
-        
+
         # Parallel computation
         with Pool(processes=self.max_processes) as pool:
             results = pool.map(parameter_dijkstra_worker, args_list)
-        
+
         t1 = time.time()
         print(f"Parallel parameter matrix computation: {t1-t0:.2f} seconds")
-        
+
         # Assemble matrices
         parameter_matrix = np.zeros((len(parameter_list), len(possible_alarm_list)))
         path_length_matrix = np.zeros((len(parameter_list), len(possible_alarm_list)))
-        
-        for param_index, row_data, path_lengths in results:
+        neutral_counts = [0] * len(parameter_list)
+
+        for param_index, row_data, path_lengths, neutral_count in results:
             if row_data and path_lengths:
                 parameter_matrix[param_index] = row_data
                 path_length_matrix[param_index] = path_lengths
-        
-        return parameter_matrix, path_length_matrix
+                neutral_counts[param_index] = neutral_count
+
+        return parameter_matrix, path_length_matrix, neutral_counts
     
     def compute_timestep_batch_parallel(self, timestep_data_list: List, 
                                        graph_builder_func, compute_func) -> List:

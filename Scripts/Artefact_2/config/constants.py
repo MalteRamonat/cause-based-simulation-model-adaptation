@@ -99,13 +99,13 @@ class NodeColors:
 # Rule Probabilities
 class RuleProbabilities:
     HIGH = 0.99
-    MEDIUM = 0.7
-    LOW = 0.3
+    MEDIUM = 0.97
+    LOW = 0.95
 
 # Processing Constants
 class ProcessingConstants:
     DEFAULT_DECAY_FACTOR = 0.001
-    DEFAULT_ABORT_TIME = 400
+    DEFAULT_ABORT_TIME = 1000
     MIN_EDGE_WEIGHT = 0.01
     MAX_PATH_LENGTH = 20
     TOP_PARAMETERS_COUNT = 60

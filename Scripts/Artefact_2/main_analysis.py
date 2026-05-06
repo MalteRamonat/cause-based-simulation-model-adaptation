@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Dict, Any, Optional
 
 from components.analysis_engine import AnalysisEngine
-from config.constants import ProcessingConstants, OutputConstants
+from config.constants import ProcessingConstants
 
 
 class AvedasAnalysis:
@@ -46,49 +46,32 @@ class AvedasAnalysis:
         Returns:
             Analysis results as a dictionary.
         """
-        print("=" * 60)
-        print("AVEDAS Root Cause Analysis - Neue modulare Version")
-        print("=" * 60)
-        
         try:
-            # 1. Initialisierung von AML
             self.engine.initialize_from_aml(aml_file)
-            
-            # 2. System-State aktualisieren (falls Daten vorhanden)
+
             if valve_states or alarm_states or deviations:
-                print("\nAktualisiere Systemzustand...")
                 self.engine.update_system_state(
                     valve_states or {},
                     alarm_states or {},
                     deviations or {}
                 )
-            
-            # 3. Matrizen berechnen
-            print(f"\nBerechne Influence-Matrizen ({'parallel' if use_parallel else 'sequentiell'})...")
+
             matrices = self.engine.compute_influence_matrices(use_parallel)
-            
-            # 4. Ranking erstellen
-            print("\nErstelle Parameter-Ranking...")
             ranking = self.engine.get_parameter_ranking()
-            
-            # 5. Zusammenfassung erstellen
             summary = self.engine.get_analysis_summary()
-            
-            # 6. Ergebnisse zusammenstellen
+
             self.results = {
                 'summary': summary,
                 'ranking': ranking,
-                'matrices': {name: matrix.tolist() if hasattr(matrix, 'tolist') else matrix 
-                           for name, matrix in matrices.items()},
+                'matrices': {name: matrix.tolist() if hasattr(matrix, 'tolist') else matrix
+                             for name, matrix in matrices.items()},
                 'aml_file': aml_file,
                 'processing_mode': 'parallel' if use_parallel else 'sequential'
             }
-            
-            # 7. Ergebnisse ausgeben
+
             self._print_results()
-            
             return self.results
-            
+
         except Exception as e:
             print(f"Analysis error: {e}")
             sys.exit(1)
@@ -134,17 +117,16 @@ class AvedasAnalysis:
         
         # 2. Ranking als CSV exportieren
         ranking_df = pd.DataFrame(
-            self.results['ranking'], 
+            self.results['ranking'],
             columns=['Parameter', 'Influence']
         )
         ranking_file = f"{output_prefix}_parameter_ranking.csv"
         ranking_df.to_csv(ranking_file, index=False)
         print(f"Parameter-Ranking exportiert nach: {ranking_file}")
-        
+
         # 3. Zusammenfassung als JSON exportieren
         summary_file = f"{output_prefix}_analysis_summary.json"
         with open(summary_file, 'w', encoding='utf-8') as f:
-            # Erstelle eine JSON-serialisierbare Version der Zusammenfassung
             json_summary = {
                 'summary': self.results['summary'],
                 'top_ranking': self.results['ranking'][:20],
@@ -153,20 +135,20 @@ class AvedasAnalysis:
             }
             json.dump(json_summary, f, indent=2, ensure_ascii=False)
         print(f"Analyse-Zusammenfassung exportiert nach: {summary_file}")
-        
+
         # 4. Detaillierter Excel-Report (optional)
         try:
-            self._export_excel_report(output_prefix)
+            self._export_excel_report(output_prefix, ranking_df)
         except ImportError:
             print("Excel export unavailable (openpyxl not installed)")
     
-    def _export_excel_report(self, output_prefix: str):
+    def _export_excel_report(self, output_prefix: str, ranking_df: pd.DataFrame):
         """Erstellt einen detaillierten Excel-Report."""
         try:
             import openpyxl
             from openpyxl.utils.dataframe import dataframe_to_rows
             from openpyxl.styles import Font, Alignment
-            
+
             # Excel-Datei erstellen
             wb = openpyxl.Workbook()
             
@@ -200,11 +182,7 @@ class AvedasAnalysis:
             
             # Parameter-Ranking
             ws_ranking = wb.create_sheet("Parameter-Ranking")
-            ranking_df = pd.DataFrame(
-                self.results['ranking'], 
-                columns=['Parameter', 'Influence']
-            )
-            
+
             for r in dataframe_to_rows(ranking_df, index=False, header=True):
                 ws_ranking.append(r)
             

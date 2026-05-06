@@ -204,7 +204,7 @@ class RuleSetManager:
             GraphRule(
                 source_type=CarrierTypes.PDROP_NOM,
                 target_type=CarrierTypes.FLOW,
-                rule_number=18,
+                rule_number=120,
                 strength=probability_map[CarrierTypes.PDROP_NOM],
                 effect_factor=-1,
                 apply_carrier="PressureDropNominal",
@@ -213,11 +213,21 @@ class RuleSetManager:
             GraphRule(
                 source_type=CarrierTypes.PDROP_NOM,
                 target_type=CarrierTypes.PRESSURE,
-                rule_number=113,
+                rule_number=121,
                 strength=probability_map[CarrierTypes.PDROP_NOM],
                 effect_factor=-1,
                 apply_carrier="PressureDropNominal",
                 rationale="Higher pressure drop affects pressure distribution"
+            ),
+            GraphRule(
+                source_type=CarrierTypes.PRESSURE,
+                target_type=CarrierTypes.PDROP_NOM,
+                rule_number=122,
+                strength=probability_map[CarrierTypes.PDROP_NOM],
+                effect_factor=1,
+                inverse=True,
+                apply_carrier="PressureDropNominal",
+                rationale="Pressure influences nominal pressure drop detection"
             )
         ])
         

@@ -9,7 +9,7 @@ The pipeline is organized into three successive artefacts:
 | Artefact | Entry point | Purpose |
 |----------|-------------|---------|
 | 1 | `Scripts/Artefact_1/Comparison_Main.py` | Compare sensor data against Modelica simulation output (MAE, sMAPE per channel) |
-| 2 | `Scripts/Artefact_2/root_cause_main.py` | Propagate deviation signals through an AutomationML dependency graph to rank simulation parameters by causal influence |
+| 2 | `Scripts/Artefact_2/main_analysis.py` | Propagate deviation signals through an AutomationML dependency graph to rank simulation parameters by causal influence |
 | 3 | `Scripts/Artefact_3/Parameter_Adaptation_Main.py` | Run Bayesian optimization (GPyOpt) to adapt the top-ranked parameters until the simulation matches reality |
 
 The pipeline has been validated on two OpenModelica simulation models — see **Simulation Models** below.
@@ -111,9 +111,16 @@ Cause-Based-Simulation-Model-Adaptation/
 │   │   └── Resources/                 # Required input CSVs (committed)
 │   │
 │   ├── Artefact_2/                    # Root cause analysis
-│   │   ├── root_cause_main.py         # ← entry point
-│   │   ├── Arroyo_DCDG_PLUT.py        # DCDG graph engine
-│   │   ├── A2_Utilities.py
+│   │   ├── main_analysis.py           # ← entry point (CLI)
+│   │   ├── A2_Utilities.py            # Test-case file preparation utilities
+│   │   ├── components/
+│   │   │   ├── graph_builder.py       # AML → igraph DCDG construction
+│   │   │   ├── analysis_engine.py     # Matrix computation + parameter ranking
+│   │   │   ├── parallel_matrix.py     # Multiprocessing Dijkstra workers
+│   │   │   └── valve_manager.py       # Valve state + edge weight management
+│   │   ├── config/
+│   │   │   ├── constants.py           # Carrier types, edge types, numeric constants
+│   │   │   └── rules.py               # Data-driven ruleset (RuleSetManager)
 │   │   └── Resources/                 # AML file, designation tables, test cases
 │   │
 │   └── Artefact_3/                    # Bayesian parameter adaptation
@@ -162,11 +169,30 @@ Produces:
 ### Artefact 2 — Root Cause Analysis
 
 ```bash
-python Scripts/Artefact_2/root_cause_main.py
+# Basic run (parallel computation, no export)
+python Scripts/Artefact_2/main_analysis.py --aml Scripts/Artefact_2/Resources/Gas_Entspannungsstrecke_incl_SensorNamingConvention.aml
+
+# With test data and result export
+python Scripts/Artefact_2/main_analysis.py \
+    --aml Scripts/Artefact_2/Resources/Gas_Entspannungsstrecke_incl_SensorNamingConvention.aml \
+    --test-data \
+    --export RCA_Results/analysis_results
+
+# Sequential computation (no multiprocessing)
+python Scripts/Artefact_2/main_analysis.py --aml <path>.aml --sequential
 ```
 
+| Flag | Description |
+|------|-------------|
+| `--aml <path>` | Path to the AutomationML plant description (required) |
+| `--parallel` / `--sequential` | Computation mode (default: parallel) |
+| `--export <prefix>` | Export CSV, JSON, and Excel results with the given filename prefix |
+| `--test-data` | Inject example valve/alarm/deviation states for testing |
+| `--max-processes <n>` | Limit worker process count (default: CPU count) |
+
 Requires: deviation and residual Excel files for each test case in
-`Scripts/Artefact_2/Resources/Testcases/GAS_Testcases/`.
+`Scripts/Artefact_2/Resources/Testcases/GAS_Testcases/`. Use `A2_Utilities.py`
+to generate these from Artefact 1 output.
 
 Produces: `RCA_Results/parameter_influence_testcase_<N>.csv`
 
