@@ -5,6 +5,7 @@ All variables defined here are imported via wildcard import in Bayesian_Function
 Paths are derived from Config.py so the project works on any machine after cloning.
 """
 
+import json
 import sys
 import os
 from pathlib import Path
@@ -97,29 +98,10 @@ MANUAL_BOUNDS = {
     "Pipe_Water_post_Heat_Exchanger.l":   (0.959, 1.781),
 }
 
-# Nominal (original) parameter values — the model is reset to these before each optimization run
-ORIGINAL_PARAMETER_VALUES = {
-    "Pipe_Input_Filter.r":               0.0052,
-    "Pipe_Input_Filter.l":               0.1,
-    "Filter.Kvs":                        1000,
-    "filter_clogging.height":            0,
-    "Pipe_Filter_Heat_Exchanger.r":      0.0052,
-    "Pipe_Filter_Heat_Exchanger.l":      1.27,
-    "Heat_Exchanger.A":                  5,
-    "Heat_Exchanger.k_NTU":            100,
-    "Pipe_Heat_Exchanger_Choke_Valve.r": 0.0052,
-    "Pipe_Heat_Exchanger_Choke_Valve.l": 2.048,
-    "Choke_Valve.Kvs":                   40,
-    "Heat_Loss_Choke_Valve.alpha":       80,
-    "corrective_factor.k":              -25,
-    "Pipe_Choke_Valve_Output.r":         0.05,
-    "Pipe_Choke_Valve_Output.l":         1.673,
-    "ThreeWayValve.p_ref":             100000.0,
-    "Pipe_Water_pre_Heat_Exchanger.r":   0.01,
-    "Pipe_Water_pre_Heat_Exchanger.l":   1.37,
-    "Pipe_Water_post_Heat_Exchanger.r":  0.0052,
-    "Pipe_Water_post_Heat_Exchanger.l":  1.37,
-}
+# Nominal (original) parameter values — loaded from JSON so they survive optimization runs
+_ORIGINAL_VALUES_PATH = _RESOURCES_DIR / "original_parameter_values.json"
+with open(_ORIGINAL_VALUES_PATH) as _f:
+    ORIGINAL_PARAMETER_VALUES: dict[str, float] = json.load(_f)
 
 # Mapping from Modelica simulation variable names to the corresponding sensor column names
 # in the real-plant dataset CSV

@@ -1,0 +1,22 @@
+{
+  "Pipe_Input_Filter.r": 0.0052,
+  "Pipe_Input_Filter.l": 0.1,
+  "Filter.Kvs": 1000,
+  "filter_clogging.height": 0,
+  "Pipe_Filter_Heat_Exchanger.r": 0.0052,
+  "Pipe_Filter_Heat_Exchanger.l": 1.27,
+  "Heat_Exchanger.A": 5,
+  "Heat_Exchanger.k_NTU": 100,
+  "Pipe_Heat_Exchanger_Choke_Valve.r": 0.0052,
+  "Pipe_Heat_Exchanger_Choke_Valve.l": 2.048,
+  "Choke_Valve.Kvs": 40,
+  "Heat_Loss_Choke_Valve.alpha": 80,
+  "corrective_factor.k": -25,
+  "Pipe_Choke_Valve_Output.r": 0.05,
+  "Pipe_Choke_Valve_Output.l": 1.673,
+  "ThreeWayValve.p_ref": 100000.0,
+  "Pipe_Water_pre_Heat_Exchanger.r": 0.01,
+  "Pipe_Water_pre_Heat_Exchanger.l": 1.37,
+  "Pipe_Water_post_Heat_Exchanger.r": 0.0052,
+  "Pipe_Water_post_Heat_Exchanger.l": 1.37
+}

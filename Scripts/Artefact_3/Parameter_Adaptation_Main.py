@@ -26,8 +26,8 @@ import Config
 from OMPython_Functionalities import start_modelica, get_modelica_parameter_data
 import Bayesian_Main
 from Bayesian_Functions import *
-import sensor_simvar_mapping
 import Bayesian_Config
+import parameter_persistence
 import csv
 import numpy as np
 from scipy import stats
@@ -262,7 +262,7 @@ def create_bounds_df(sigma=0.05, continuous_or_discrete='continuous', grid_facto
         print("No manual bounds set.")
     #save the bound values to a csv file
     bound_value_df.to_csv(Bayesian_Config.CURRENT_BOUNDS_FILE, index=False)
-    excel_path_bounds = Bayesian_Config.CURRENT_BOUNDS_FILE.replace('.csv', '.xlsx')
+    excel_path_bounds = str(Bayesian_Config.CURRENT_BOUNDS_FILE).replace('.csv', '.xlsx')
     bound_value_df.to_excel(excel_path_bounds, index=False)
     
     return bound_value_df
@@ -466,12 +466,15 @@ def transform_bounds_from_discrete_to_continuous():
             max_bound = discrete_values[index + 1] if index < len(discrete_values) - 1 else None
 
             # Add the new row to the transformed dataframe
-            transformed_df = transformed_df.append({
-                'Parameter': parameter,
-                'Value': row['Value'],
-                'Min_Bound': min_bound,
-                'Max_Bound': max_bound
-            }, ignore_index=True)
+            transformed_df = pd.concat([
+                transformed_df,
+                pd.DataFrame([{
+                    'Parameter': parameter,
+                    'Value': row['Value'],
+                    'Min_Bound': min_bound,
+                    'Max_Bound': max_bound,
+                }]),
+            ], ignore_index=True)
 
         current_bounds_df.to_csv(current_bounds_df_location, index=False)
 
@@ -663,27 +666,266 @@ def clean_directory(directory_path):
             print(f"Error deleting {path}: {e}")
 
 
-def main():
+def confirm_and_save_optimal_parameters(optimization_results_df):
+    """Display optimized parameters, ask for confirmation, then persist permanently.
 
-    sigma = 0.05 
-    # Number of Parameters from Cause List to be considered
-    number_of_root_cause_parameters = 19 # These are ranked from the highest to the lowest impact according to the RCA
-    # Bounds Dataframe contains all parameters that are considered as root causes
-    # From these the top entries will be looped through and optimized
-    continuous_or_discrete= 'continuous' # 'continuous'
+    Writes confirmed values to original_parameter_values.json (loaded at next
+    session startup) and patches the Modelica .mo file in-place.
+    """
+    import importlib
+    import Bayesian_Config as _bc
+
+    optimal = optimization_results_df.dropna(subset=["Value_after_single_Param_Optimization"])
+    if optimal.empty:
+        print("No optimised parameter values found — nothing to save.")
+        return
+
+    print("\n--- Optimisation Results ---")
+    print(f"{'Parameter':<45} {'Before':>12} {'After':>12} {'Improvement':>12}")
+    print("-" * 85)
+    for _, row in optimal.iterrows():
+        before = row["Value_before_single_Param_Optimization"]
+        after  = row["Value_after_single_Param_Optimization"]
+        try:
+            improvement_str = f"{float(row.get('Improvement_of_Deviation', float('nan'))):>11.1%}"
+        except (TypeError, ValueError):
+            improvement_str = f"{'N/A':>12}"
+        print(f"{row['Parameter']:<45} {float(before):>12.4f} {float(after):>12.4f} {improvement_str}")
+
+    answer = input(
+        "\nApply these parameter values permanently to the simulation model? [y/N]: "
+    ).strip().lower()
+
+    if answer != "y":
+        print("No changes saved.")
+        return
+
+    param_updates = dict(
+        zip(optimal["Parameter"], optimal["Value_after_single_Param_Optimization"].astype(float))
+    )
+
+    parameter_persistence.update_original_values(param_updates)
+
+    mo_path = Bayesian_Config.MODELICA_FILE_DIR / Bayesian_Config.MODELICA_FILE_NAME
+    failed = []
+    for param, value in param_updates.items():
+        ok = parameter_persistence.write_parameter_to_mo_file(mo_path, param, value)
+        if not ok:
+            failed.append(param)
+
+    if failed:
+        print(f"Warning: could not locate the following in the .mo file: {failed}")
+        print("JSON store was updated; update these parameters manually in the .mo file if needed.")
+    else:
+        print(f"Saved {len(param_updates)} parameter(s) to {mo_path.name} and original_parameter_values.json.")
+
+    importlib.reload(_bc)
+    print("Session defaults reloaded.")
+
+
+def _run_mode_a(bounds_df, number_of_root_cause_parameters, iterations_for_doe,
+                number_of_optimization_iterations, continuous_or_discrete,
+                num_discrete_segments, metamodel_data_file):
+    """Mode A: sequential single-parameter optimization over all ranked parameters."""
+    optimization_results_df = bounds_df[["Parameter", "Value"]].copy()
+    optimization_results_df.rename(columns={"Value": "Value_before_single_Param_Optimization"}, inplace=True)
+
+    for sim_col in REAL_COLUMNS_MAPPING:
+        optimization_results_df[f"Deviation_of_observed_{sim_col}_before_Optimization"] = None
+        optimization_results_df[f"Deviation_of_observed_{sim_col}_after_Optimization"] = None
+
+    optimization_results_df["Total_Deviation_before_Optimization"] = None
+    optimization_results_df["Value_after_single_Param_Optimization"] = None
+    optimization_results_df["Total_Deviation_after_Optimization"] = None
+    optimization_results_df["Improvement_of_Deviation"] = None
+    optimization_results_df["Significance_of_Improvement"] = None
+    optimization_results_df.to_csv(Bayesian_Config.OPTIMIZATION_RESULTS_FILE, index=False)
+
+    iterations_for_doe = int(input(f"Current DoE samples: {iterations_for_doe}. Enter new value: "))
+    number_of_optimization_iterations = int(input(f"Current optimization iterations: {number_of_optimization_iterations}. Enter new value: "))
+
+    for i in range(min(len(bounds_df), number_of_root_cause_parameters)):
+        print(i)
+        bounds = write_bounds(bounds_df, i, continuous_or_discrete=continuous_or_discrete, discrete_bound_number=num_discrete_segments)
+        print(bounds)
+        param_name  = bounds_df.loc[i, "Parameter"]
+        param_value = bounds_df.loc[i, "Value"]
+        generate_initial_dataset(bounds, param_value, index_iter=i)
+        error_tolerance = 0.001
+        print(f"Error tolerance set to {error_tolerance} to find global optimum.")
+        print(f"Starting optimization: {number_of_optimization_iterations} iterations, {iterations_for_doe} LHS samples, tolerance {error_tolerance}")
+
+        Bayesian_Main.run_Bayes_optimization(
+            iterations_for_DoE=iterations_for_doe,
+            number_of_optimization_iterations=number_of_optimization_iterations,
+            error_tolerance=error_tolerance,
+            metamodel_data_file=metamodel_data_file,
+            bounds=bounds,
+            index_iter=i,
+        )
+        set_original_parameter(param_value, param_name)
+
+    optimization_df = pd.read_csv(Bayesian_Config.OPTIMIZATION_RESULTS_FILE)
+    evaluate_adaptation_improvement(optimization_df)
+    return pd.read_csv(Bayesian_Config.EVALUATION_RESULTS_FILE)
+
+
+def _run_mode_b(bounds_df, number_of_root_cause_parameters, iterations_for_doe,
+                number_of_optimization_iterations, error_tolerance, metamodel_data_file):
+    """Mode B: progressive multi-parameter optimization ordered by highest expected improvement."""
+    evaluation_already_done = input("Has evaluation already been performed? (yes/no): ")
+    if evaluation_already_done.lower() == "no":
+        optimization_df = pd.read_csv(Bayesian_Config.OPTIMIZATION_RESULTS_FILE)
+        evaluate_adaptation_improvement(optimization_df)
+    else:
+        print("Evaluation already done — starting progressive parameter adaptation.")
+
+    evaluation_results_df = pd.read_csv(Bayesian_Config.EVALUATION_RESULTS_FILE)
+    evaluation_results_df = evaluation_results_df.sort_values(by="Improvement_of_Deviation", ascending=False)
+    print(evaluation_results_df)
+    plot_improvement_of_deviation(evaluation_results_df)
+    transform_bounds_from_discrete_to_continuous()
+    start_tkinter_app()
+
+    evaluation_results_UserChoice_df = pd.read_csv(Bayesian_Config.USER_EVALUATION_RESULTS_FILE)
+
+    error_tolerance = float(input(f"Current error tolerance: {error_tolerance}. Enter new value: "))
+    iterations_for_doe = int(input(f"Current DoE samples: {iterations_for_doe}. Enter new value: "))
+    number_of_optimization_iterations = int(input(f"Current optimization iterations: {number_of_optimization_iterations}. Enter new value: "))
+
+    for i in range(min(len(evaluation_results_UserChoice_df), number_of_root_cause_parameters)):
+        setup_adaptation_process(i)
+        if i == 0:
+            continue
+        name_in_evaluation_results_UserChoice = evaluation_results_UserChoice_df.loc[i, "Parameter"]
+        index_for_bound = bounds_df[bounds_df["Parameter"] == name_in_evaluation_results_UserChoice].index[0]
+        current_bound = write_bounds(evaluation_results_UserChoice_df, i)
+        print(current_bound)
+        Bayesian_Main.run_Bayes_optimization(
+            iterations_for_DoE=iterations_for_doe,
+            number_of_optimization_iterations=number_of_optimization_iterations,
+            error_tolerance=error_tolerance,
+            metamodel_data_file=metamodel_data_file,
+            bounds=current_bound,
+            index_iter=index_for_bound,
+        )
+
+    return pd.read_csv(Bayesian_Config.OPTIMIZATION_RESULTS_FILE)
+
+
+def _run_mode_c(bounds_df, number_of_root_cause_parameters, iterations_for_doe,
+                number_of_optimization_iterations, error_tolerance, num_discrete_segments,
+                metamodel_data_file):
+    """Mode C: parallel multi-parameter optimization with optional discrete grid search."""
+    evaluation_already_done = input("Has evaluation already been performed? (yes/no): ")
+    if evaluation_already_done.lower() == "no":
+        optimization_df = pd.read_csv(Bayesian_Config.OPTIMIZATION_RESULTS_FILE)
+        evaluate_adaptation_improvement(optimization_df)
+    else:
+        print("Evaluation already done — starting parallel parameter adaptation.")
+
+    evaluation_results_df = pd.read_csv(Bayesian_Config.EVALUATION_RESULTS_FILE)
+    evaluation_results_df = evaluation_results_df.sort_values(by="Improvement_of_Deviation", ascending=False)
+    print(evaluation_results_df)
+    plot_improvement_of_deviation(evaluation_results_df)
+    start_tkinter_app()
+
+    evaluation_results_UserChoice_df = pd.read_csv(Bayesian_Config.USER_EVALUATION_RESULTS_FILE)
+    max_number_of_parameters_to_optimize_parallel = int(input("How many parameters should be optimized in parallel? "))
+    if max_number_of_parameters_to_optimize_parallel > len(evaluation_results_UserChoice_df):
+        print(f"Value exceeds the number of available parameters ({len(evaluation_results_UserChoice_df)}). Capping.")
+        max_number_of_parameters_to_optimize_parallel = len(evaluation_results_UserChoice_df)
+
+    evaluation_results_UserChoice_df = evaluation_results_UserChoice_df.sort_values(by="Improvement_of_Deviation", ascending=False)
+    print("Creating discrete bounds within the selected continuous bounds.")
+    num_discrete_segments = int(input("Number of discrete segments: "))
+    evaluation_results_UserChoice_df = transform_bounds_from_continuous_to_discrete(num_discrete_segments)
+    number_of_root_cause_parameters = max_number_of_parameters_to_optimize_parallel
+    single_or_multiple_adaptation = "multiple"
+    continuous_or_discrete = "discrete"
+    print(f"Optimizing {number_of_root_cause_parameters} parameters in parallel.")
+    iterations_for_doe = int(input(f"Current DoE samples: {iterations_for_doe}. Enter new value: "))
+    number_of_optimization_iterations = int(input(f"Current optimization iterations: {number_of_optimization_iterations}. Enter new value: "))
+
+    if number_of_root_cause_parameters == 0:
+        return pd.read_csv(Bayesian_Config.OPTIMIZATION_RESULTS_FILE)
+
+    name_in_evaluation_results_UserChoice = []
+    index_for_bound = []
+    for i in range(number_of_root_cause_parameters):
+        name = evaluation_results_UserChoice_df.loc[i, "Parameter"]
+        name_in_evaluation_results_UserChoice.append(name)
+        index = bounds_df[bounds_df["Parameter"] == name].index[0]
+        index_for_bound.append(index)
+
+    current_bound = write_bounds(
+        bounds_df=evaluation_results_UserChoice_df,
+        num_rows=number_of_root_cause_parameters,
+        continuous_or_discrete=continuous_or_discrete,
+        discrete_bound_number=num_discrete_segments,
+        single_or_multiple=single_or_multiple_adaptation,
+    )
+    print(current_bound)
+    if not (isinstance(index_for_bound, list) and len(index_for_bound) == number_of_root_cause_parameters):
+        print("Error: index_for_bound must be a list with length equal to the number of parameters.")
+        return pd.read_csv(Bayesian_Config.OPTIMIZATION_RESULTS_FILE)
+
+    error_tolerance = float(input(f"Current error tolerance: {error_tolerance}. Enter new value: "))
+    Bayesian_Main.run_Bayes_optimization(
+        iterations_for_DoE=iterations_for_doe,
+        number_of_optimization_iterations=number_of_optimization_iterations,
+        error_tolerance=error_tolerance,
+        metamodel_data_file=metamodel_data_file,
+        bounds=current_bound,
+        index_iter=index_for_bound,
+        number_of_parameters=number_of_root_cause_parameters,
+    )
+
+    finetune = input("Finetune Case C results with continuous bounds? (y/n): ")
+    if finetune.lower() == "y":
+        finetune_bounds_from_discrete_to_continuous(number_of_root_cause_parameters)
+        print("Finetuning completed.")
+        current_bounds_df = pd.read_csv(Bayesian_Config.CURRENT_BOUNDS_FILE)
+        continuous_or_discrete = "continuous"
+        current_bound = write_bounds(
+            bounds_df=current_bounds_df,
+            num_rows=number_of_root_cause_parameters,
+            continuous_or_discrete=continuous_or_discrete,
+            discrete_bound_number=num_discrete_segments,
+            single_or_multiple=single_or_multiple_adaptation,
+        )
+        print(current_bound)
+        error_tolerance = float(input(f"Current error tolerance: {error_tolerance}. Enter new value: "))
+        iterations_for_doe = int(input(f"Current DoE samples: {iterations_for_doe}. Enter new value: "))
+        number_of_optimization_iterations = int(input(f"Current optimization iterations: {number_of_optimization_iterations}. Enter new value: "))
+        Bayesian_Main.run_Bayes_optimization(
+            iterations_for_DoE=iterations_for_doe,
+            number_of_optimization_iterations=number_of_optimization_iterations,
+            error_tolerance=error_tolerance,
+            metamodel_data_file=metamodel_data_file,
+            bounds=current_bound,
+            index_iter=index_for_bound,
+            number_of_parameters=number_of_root_cause_parameters,
+        )
+
+    return pd.read_csv(Bayesian_Config.OPTIMIZATION_RESULTS_FILE)
+
+
+def main():
+    sigma = 0.05
+    number_of_root_cause_parameters = 19
+    continuous_or_discrete = 'continuous'
     grid_factor = 10
-    num_discrete_segments=10
-    
-    clean_directory(Bayesian_Config.DEST_PATH)    
-        
-    
+    num_discrete_segments = 10
+
+    clean_directory(Bayesian_Config.DEST_PATH)
+
     sigma = get_user_choice_for_calibration_or_adaptation()
     print(f"sigma: {sigma}")
-    
+
     bounds_df = create_bounds_df(sigma=sigma, continuous_or_discrete=continuous_or_discrete, grid_factor=grid_factor, num_discrete_segments=num_discrete_segments)
     print(bounds_df)
 
-    # Gruppierung der Parameter
     user_grouping_decision = input("Are there parameters with identical behaviour that can be grouped? (y/n): ")
     if user_grouping_decision.lower() == "y":
         grouped_df, combined_params_df, bounds_df = group_parameters(bounds_df)
@@ -693,13 +935,12 @@ def main():
     else:
         print("Invalid input. Please enter 'y' or 'n'.")
         return
-    
+
     number_of_optimization_iterations = 8
     iterations_for_doe = 8
     error_tolerance = 0.01
     metamodel_data_file = 'Data_metamodel.csv'
-    mapping_df = sensor_simvar_mapping.create_mapping_table()
-   
+
     while True:
         print("""------------Simulationmodel Adaption Terminal------------
     (A) Loop adaption through all modelparameters (Initialization)
@@ -709,188 +950,36 @@ def main():
         choice = input('Select:')
 
         match choice.upper():
-
             case "A":
-                optimization_results_df = bounds_df[["Parameter", "Value"]].copy()
-                optimization_results_df.rename(columns={"Value": "Value_before_single_Param_Optimization"}, inplace=True)
+                result_df = _run_mode_a(
+                    bounds_df, number_of_root_cause_parameters,
+                    iterations_for_doe, number_of_optimization_iterations,
+                    continuous_or_discrete, num_discrete_segments, metamodel_data_file,
+                )
+                confirm_and_save_optimal_parameters(result_df)
 
-                for sim_col, real_col in REAL_COLUMNS_MAPPING.items():
-                    optimization_results_df[f"Deviation_of_observed_{sim_col}_before_Optimization"] = None
-                    optimization_results_df[f"Deviation_of_observed_{sim_col}_after_Optimization"] = None
-
-                optimization_results_df["Total_Deviation_before_Optimization"] = None
-                optimization_results_df["Value_after_single_Param_Optimization"] = None
-                optimization_results_df["Total_Deviation_after_Optimization"] = None
-                optimization_results_df["Improvement_of_Deviation"] = None
-                optimization_results_df["Significance_of_Improvement"] = None
-                optimization_results_df.to_csv(Bayesian_Config.OPTIMIZATION_RESULTS_FILE, index=False)
-
-                global bounds
-                iterations_for_doe = int(input(f"Current DoE samples: {iterations_for_doe}. Enter new value: "))
-                number_of_optimization_iterations = int(input(f"Current optimization iterations: {number_of_optimization_iterations}. Enter new value: "))
-
-                for i in range(min(len(bounds_df), number_of_root_cause_parameters)):
-                    print(i)
-                    bounds = write_bounds(bounds_df, i, continuous_or_discrete=continuous_or_discrete, discrete_bound_number=num_discrete_segments)
-                    print(bounds)
-                    param_name  = bounds_df.loc[i, "Parameter"]
-                    param_value = bounds_df.loc[i, "Value"]
-                    generate_initial_dataset(bounds, param_value, index_iter=i)
-                    error_tolerance = 0.001
-                    print(f"Error tolerance set to {error_tolerance} to find global optimum.")
-                    print(f"Starting optimization: {number_of_optimization_iterations} iterations, {iterations_for_doe} LHS samples, tolerance {error_tolerance}")
-
-                    Bayesian_Main.run_Bayes_optimization(
-                        iterations_for_DoE=iterations_for_doe,
-                        number_of_optimization_iterations=number_of_optimization_iterations,
-                        error_tolerance=error_tolerance,
-                        metamodel_data_file=metamodel_data_file,
-                        bounds=bounds,
-                        index_iter=i,
-                    )
-                    set_original_parameter(param_value, param_name)
-
-                optimization_df = pd.read_csv(Bayesian_Config.OPTIMIZATION_RESULTS_FILE)
-                evaluate_adaptation_improvement(optimization_df)
-            
             case "B":
-                evaluation_already_done = input("Has evaluation already been performed? (yes/no): ")
-                if evaluation_already_done.lower() == "no":
-                    optimization_df = pd.read_csv(Bayesian_Config.OPTIMIZATION_RESULTS_FILE)
-                    evaluate_adaptation_improvement(optimization_df)
-                else:
-                    print("Evaluation already done — starting progressive parameter adaptation.")
-                
-                evaluation_results_location = EVALUATION_RESULTS_FILE
-                evaluation_results_df = pd.read_csv(evaluation_results_location)
+                result_df = _run_mode_b(
+                    bounds_df, number_of_root_cause_parameters,
+                    iterations_for_doe, number_of_optimization_iterations,
+                    error_tolerance, metamodel_data_file,
+                )
+                confirm_and_save_optimal_parameters(result_df)
 
-                evaluation_results_df = evaluation_results_df.sort_values(by="Improvement_of_Deviation", ascending=False)
-                print(evaluation_results_df)
-                plot_improvement_of_deviation(evaluation_results_df)
-                transform_bounds_from_discrete_to_continuous()
-                start_tkinter_app()
-
-                evaluation_results_UserChoice_location = str(USER_EVALUATION_RESULTS_FILE)
-                evaluation_results_UserChoice_df = pd.read_csv(evaluation_results_UserChoice_location)
-
-                global current_bound
-                error_tolerance = input(f"Current error tolerance: {error_tolerance}. Enter new value: ")
-                iterations_for_doe = int(input(f"Current DoE samples: {iterations_for_doe}. Enter new value: "))
-                number_of_optimization_iterations = int(input(f"Current optimization iterations: {number_of_optimization_iterations}. Enter new value: "))
-                for i in range(min(len(evaluation_results_UserChoice_df), number_of_root_cause_parameters)):
-                    setup_adaption_process(i)
-                    if i == 0:
-                        continue
-                    else:
-                        name_in_evaluation_results_UserChoice = evaluation_results_UserChoice_df.loc[i, "Parameter"]
-                        index_for_bound = bounds_df[bounds_df["Parameter"] == name_in_evaluation_results_UserChoice].index[0]
-                        current_bound = write_bounds(evaluation_results_UserChoice_df, i)
-                        print(current_bound)
-                        Bayesian_Main.run_Bayes_optimization(
-                            iterations_for_DoE=iterations_for_doe,
-                            number_of_optimization_iterations=number_of_optimization_iterations,
-                            error_tolerance=error_tolerance,
-                            metamodel_data_file=metamodel_data_file,
-                            bounds=current_bound,
-                            index_iter=index_for_bound,
-                        )
             case "C":
-                evaluation_already_done = input("Has evaluation already been performed? (yes/no): ")
-                if evaluation_already_done.lower() == "no":
-                    optimization_df = pd.read_csv(Bayesian_Config.OPTIMIZATION_RESULTS_FILE)
-                    evaluate_adaptation_improvement(optimization_df)
-                else:
-                    print("Evaluation already done — starting parallel parameter adaptation.")
-                evaluation_results_location = str(EVALUATION_RESULTS_FILE)
-                evaluation_results_df = pd.read_csv(evaluation_results_location)
-                evaluation_results_df = evaluation_results_df.sort_values(by="Improvement_of_Deviation", ascending=False)
-                print(evaluation_results_df)
-                plot_improvement_of_deviation(evaluation_results_df)
-                start_tkinter_app()
-                evaluation_results_UserChoice_location = str(USER_EVALUATION_RESULTS_FILE)
-                evaluation_results_UserChoice_df = pd.read_csv(evaluation_results_UserChoice_location)
-                max_number_of_parameters_to_optimize_parallel = int(input("How many parameters should be optimized in parallel? "))
-                if max_number_of_parameters_to_optimize_parallel > len(evaluation_results_UserChoice_df):
-                    print(f"Value exceeds the number of available parameters ({len(evaluation_results_UserChoice_df)}). Capping.")
-                    max_number_of_parameters_to_optimize_parallel = len(evaluation_results_UserChoice_df)
-                evaluation_results_UserChoice_df = evaluation_results_UserChoice_df.sort_values(by="Improvement_of_Deviation", ascending=False)
-                print("Creating discrete bounds within the selected continuous bounds.")
-                num_discrete_segments = int(input("Number of discrete segments: "))
-                evaluation_results_UserChoice_df = transform_bounds_from_continuous_to_discrete(num_discrete_segments)
-                number_of_root_cause_parameters = max_number_of_parameters_to_optimize_parallel
-                single_or_multiple_adaptation = "multiple"
-                continuous_or_discrete = "discrete"
-                print(f"Optimizing {number_of_root_cause_parameters} parameters in parallel.")
-                iterations_for_doe = int(input(f"Current DoE samples: {iterations_for_doe}. Enter new value: "))
-                number_of_optimization_iterations = int(input(f"Current optimization iterations: {number_of_optimization_iterations}. Enter new value: "))
-                if number_of_root_cause_parameters == 0:
-                    continue
-                else:
-                    if single_or_multiple_adaptation == "multiple":
-                        name_in_evaluation_results_UserChoice = []
-                        index_for_bound = []
-                        for i in range(number_of_root_cause_parameters):
-                            name = evaluation_results_UserChoice_df.loc[i, "Parameter"]
-                            name_in_evaluation_results_UserChoice.append(name)
-                            index = bounds_df[bounds_df["Parameter"] == name].index[0]
-                            index_for_bound.append(index)
-
-                    current_bound = write_bounds(
-                        bounds_df=evaluation_results_UserChoice_df,
-                        num_rows=number_of_root_cause_parameters,
-                        continuous_or_discrete=continuous_or_discrete,
-                        discrete_bound_number=num_discrete_segments,
-                        single_or_multiple=single_or_multiple_adaptation,
-                    )
-                    print(current_bound)
-                    if not (isinstance(index_for_bound, list) and len(index_for_bound) == number_of_root_cause_parameters):
-                        print("Error: index_for_bound must be a list with length equal to the number of parameters.")
-                        break
-                    error_tolerance = input(f"Current error tolerance: {error_tolerance}. Enter new value: ")
-                    Bayesian_Main.run_Bayes_optimization(
-                        iterations_for_DoE=iterations_for_doe,
-                        number_of_optimization_iterations=number_of_optimization_iterations,
-                        error_tolerance=error_tolerance,
-                        metamodel_data_file=metamodel_data_file,
-                        bounds=current_bound,
-                        index_iter=index_for_bound,
-                        number_of_parameters=number_of_root_cause_parameters,
-                    )
-
-                finetune = input("Finetune Case C results with continuous bounds? (y/n): ")
-                if finetune.lower() == "y":
-                    finetune_bounds_from_discrete_to_continuous(number_of_root_cause_parameters)
-                    print("Finetuning completed.")
-                    current_bounds_df = pd.read_csv(Bayesian_Config.CURRENT_BOUNDS_FILE)
-                    continuous_or_discrete = "continuous"
-                    current_bound = write_bounds(
-                        bounds_df=current_bounds_df,
-                        num_rows=number_of_root_cause_parameters,
-                        continuous_or_discrete=continuous_or_discrete,
-                        discrete_bound_number=num_discrete_segments,
-                        single_or_multiple=single_or_multiple_adaptation,
-                    )
-                    print(current_bound)
-                    error_tolerance = input(f"Current error tolerance: {error_tolerance}. Enter new value: ")
-                    iterations_for_doe = int(input(f"Current DoE samples: {iterations_for_doe}. Enter new value: "))
-                    number_of_optimization_iterations = int(input(f"Current optimization iterations: {number_of_optimization_iterations}. Enter new value: "))
-                    Bayesian_Main.run_Bayes_optimization(
-                        iterations_for_DoE=iterations_for_doe,
-                        number_of_optimization_iterations=number_of_optimization_iterations,
-                        error_tolerance=error_tolerance,
-                        metamodel_data_file=metamodel_data_file,
-                        bounds=current_bound,
-                        index_iter=index_for_bound,
-                        number_of_parameters=number_of_root_cause_parameters,
-                    )
+                result_df = _run_mode_c(
+                    bounds_df, number_of_root_cause_parameters,
+                    iterations_for_doe, number_of_optimization_iterations,
+                    error_tolerance, num_discrete_segments, metamodel_data_file,
+                )
+                confirm_and_save_optimal_parameters(result_df)
 
             case "X":
                 print("Exiting.")
                 break
             case _:
                 print("Invalid input. Please try again.")
-            
-    
-    
+
+
 if __name__ == "__main__":
     main()
